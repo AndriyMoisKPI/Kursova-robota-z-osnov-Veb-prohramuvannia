@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Перетворення одиниць — Теплоенергетик</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/styles.css">
+
+</head>
+
+<body>
+
+    <!-- ================= НАВІГАЦІЯ ================= -->
+
+    <nav class="navbar navbar-expand-lg navbar-dark custom-nav fixed-top">
+
+        <div class="container">
+
+            <a class="navbar-brand brand-block" href="index.html">
+                <img src="images/logo.png" class="brand-logo">
+                <span>Теплоенергетик</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+                <ul class="navbar-nav ms-auto nav-custom">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Головна</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" href="calculators.html">Калькулятори</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="directory.html">Довідник</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="office.html">Мій кабінет</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">Налаштування</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="authorization.html">Вхід</a>
+                    </li>
+
+                </ul>
+
+                <button class="btn theme-button">🌙</button>
+
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- ================= HERO ================= -->
+
+    <header class="hero-section">
+
+        <div class="container text-center">
+
+            <h1>Перетворення одиниць вимірювання</h1>
+
+            <p class="hero-subtitle">
+                Оберіть тип величини та введіть значення для перетворення.
+            </p>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ================= ОСНОВНИЙ КОНТЕНТ ================= -->
+
+    <main class="container main-content">
+
+        <section>
+
+            <h2 class="section-title">Калькулятор одиниць</h2>
+
+            <div class="converter-card">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">Тип величини</label>
+
+                        <select class="form-control">
+
+                            <option>Довжина</option>
+                            <option>Маса</option>
+                            <option>Об'єм</option>
+                            <option>Температура</option>
+                            <option>Енергія</option>
+                            <option>Тиск</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">Значення</label>
+
+                        <input type="text" class="form-control" placeholder="Введіть значення">
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">Одиниця</label>
+
+                        <select class="form-control">
+
+                            <option>Одиниця 1</option>
+                            <option>Одиниця 2</option>
+                            <option>Одиниця 3</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="row mt-4">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">Перетворити в</label>
+
+                        <select class="form-control">
+
+                            <option>Одиниця 1</option>
+                            <option>Одиниця 2</option>
+                            <option>Одиниця 3</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">Результат</label>
+
+                        <input type="text" class="form-control" placeholder="Результат" disabled>
+
+                    </div>
+
+                </div>
+
+                <div class="mt-4">
+
+                    <button class="btn btn-main">
+                        Виконати перетворення
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section>
+
+            <h2 class="section-title">Інформація</h2>
+
+            <div class="info-block">
+
+                <p>
+                    Цей розділ дозволяє виконувати перетворення одиниць вимірювання,
+                    що використовуються у формулах калькуляторів.
+                </p>
+
+                <p>
+                    У реальній версії системи тут буде доступний повний перелік
+                    інженерних одиниць та їх перерахування.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= ФУТЕР ================= -->
+
+    <footer class="footer">
+
+        © 2026 КАЛЬКУЛЯТОР ТЕПЛОЕНЕРГЕТИК
+
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="script/script.js"></script>
+
+</body>
+</html>
