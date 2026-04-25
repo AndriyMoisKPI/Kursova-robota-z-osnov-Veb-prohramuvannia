@@ -963,6 +963,7 @@ function exportSelectedProjectToPDF() {
                         ["Розділ", calc.section || "-"],
                         ["Формула", calc.formula_name || "-"],
                         ["Вираз", calc.formula || "-"],
+                        ["Вхідні дані", formatInputData(calc.input_data)],
                         ["Результат", `${calc.result || "-"} ${calc.unit || ""}`],
                         ["Дата", formatDate(calc.created_at)]
                     ]
@@ -1028,15 +1029,95 @@ async function exportSelectedProjectToDOCX() {
         Packer,
         Paragraph,
         TextRun,
-        HeadingLevel
+        HeadingLevel,
+        Table,
+        TableRow,
+        TableCell,
+        WidthType,
+        BorderStyle,
+        AlignmentType
     } = window.docx;
+
+    function createLabelValueRow(label, value) {
+        return new TableRow({
+            children: [
+                new TableCell({
+                    width: {
+                        size: 30,
+                        type: WidthType.PERCENTAGE
+                    },
+                    shading: {
+                        fill: "E8F0EC"
+                    },
+                    children: [
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: label,
+                                    bold: true
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableCell({
+                    width: {
+                        size: 70,
+                        type: WidthType.PERCENTAGE
+                    },
+                    children: [
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: String(value || "-")
+                                })
+                            ]
+                        })
+                    ]
+                })
+            ]
+        });
+    }
+
+    function formatInputsForDocx(inputData) {
+        if (!inputData || typeof inputData !== "object") {
+            return ["Вхідні дані відсутні"];
+        }
+
+        const labels = {
+            c: "Питома теплоємність c",
+            m: "Маса m",
+            dt: "Зміна температури Δt",
+            lambda: "Питома теплота плавлення λ",
+            r: "Питома теплота пароутворення r",
+            q: "Кількість теплоти Q",
+            q1: "Q1",
+            q2: "Q2",
+            q3: "Q3",
+            tau: "Час τ",
+            k: "Коефіцієнт теплопередачі k",
+            f: "Площа поверхні F",
+            alpha: "Коефіцієнт тепловіддачі α",
+            t1: "Температура t1",
+            t2: "Температура t2",
+            v: "Об’єм V",
+            p: "Тиск p",
+            T: "Температура T"
+        };
+
+        return Object.entries(inputData).map(([key, value]) => {
+            const label = labels[key] || key;
+            return `${label}: ${value}`;
+        });
+    }
 
     const children = [];
 
     children.push(
         new Paragraph({
-            text: `Проєкт: ${selectedProject.title}`,
-            heading: HeadingLevel.TITLE
+            text: "Теплоенергетик",
+            heading: HeadingLevel.TITLE,
+            alignment: AlignmentType.CENTER
         })
     );
 
@@ -1044,30 +1125,73 @@ async function exportSelectedProjectToDOCX() {
         new Paragraph({
             children: [
                 new TextRun({
-                    text: `Опис: ${selectedProject.description || "Без опису"}`,
-                    size: 24
+                    text: "Експорт проєкту",
+                    bold: true,
+                    size: 32,
+                    color: "1F5C4D"
                 })
+            ],
+            alignment: AlignmentType.CENTER,
+            spacing: {
+                after: 300
+            }
+        })
+    );
+
+    children.push(
+        new Paragraph({
+            text: "Загальна інформація про проєкт",
+            heading: HeadingLevel.HEADING_1,
+            spacing: {
+                before: 200,
+                after: 150
+            }
+        })
+    );
+
+    children.push(
+        new Table({
+            width: {
+                size: 100,
+                type: WidthType.PERCENTAGE
+            },
+            borders: {
+                top: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                bottom: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                left: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                right: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+                insideVertical: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" }
+            },
+            rows: [
+                createLabelValueRow("Назва проєкту", selectedProject.title),
+                createLabelValueRow("Опис", selectedProject.description || "Без опису"),
+                createLabelValueRow("Тематика", selectedProject.theme || "Інше"),
+                createLabelValueRow("Дата створення", formatDate(selectedProject.created_at))
             ]
         })
     );
 
     children.push(
         new Paragraph({
-            text: `Створено: ${formatDate(selectedProject.created_at)}`
-        })
-    );
-
-    children.push(
-        new Paragraph({
             text: "Елементи проєкту",
-            heading: HeadingLevel.HEADING_1
+            heading: HeadingLevel.HEADING_1,
+            spacing: {
+                before: 350,
+                after: 150
+            }
         })
     );
 
-    if (selectedProjectItems.length === 0) {
+    if (!selectedProjectItems || selectedProjectItems.length === 0) {
         children.push(
             new Paragraph({
-                text: "У проєкті немає елементів."
+                children: [
+                    new TextRun({
+                        text: "У проєкті немає елементів.",
+                        italics: true
+                    })
+                ]
             })
         );
     }
@@ -1076,37 +1200,113 @@ async function exportSelectedProjectToDOCX() {
         if (item.item_type === "note") {
             children.push(
                 new Paragraph({
-                    text: `${index + 1}. Нотатка`,
-                    heading: HeadingLevel.HEADING_2
+                    children: [
+                        new TextRun({
+                            text: `${index + 1}. Нотатка`,
+                            bold: true,
+                            size: 28,
+                            color: "1F5C4D"
+                        })
+                    ],
+                    spacing: {
+                        before: 250,
+                        after: 100
+                    }
                 })
             );
 
             children.push(
-                new Paragraph({
-                    text: item.note || ""
+                new Table({
+                    width: {
+                        size: 100,
+                        type: WidthType.PERCENTAGE
+                    },
+                    borders: {
+                        top: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" },
+                        bottom: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" },
+                        left: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" },
+                        right: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" },
+                        insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" },
+                        insideVertical: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" }
+                    },
+                    rows: [
+                        createLabelValueRow("Тип", "Нотатка"),
+                        createLabelValueRow("Текст", item.note || "-"),
+                        createLabelValueRow("Дата додавання", formatDate(item.created_at))
+                    ]
                 })
             );
         }
 
         if (item.item_type === "calculation" && item.calculations) {
             const calc = item.calculations;
+            const inputLines = formatInputsForDocx(calc.input_data).join("\n");
 
             children.push(
                 new Paragraph({
-                    text: `${index + 1}. Розрахунок`,
-                    heading: HeadingLevel.HEADING_2
+                    children: [
+                        new TextRun({
+                            text: `${index + 1}. Розрахунок`,
+                            bold: true,
+                            size: 28,
+                            color: "1F5C4D"
+                        })
+                    ],
+                    spacing: {
+                        before: 250,
+                        after: 100
+                    }
                 })
             );
 
-            children.push(new Paragraph({ text: `Розділ: ${calc.section}` }));
-            children.push(new Paragraph({ text: `Формула: ${calc.formula_name}` }));
-            children.push(new Paragraph({ text: `Вираз: ${calc.formula || "-"}` }));
-            children.push(new Paragraph({ text: `Результат: ${calc.result} ${calc.unit || ""}` }));
-            children.push(new Paragraph({ text: `Дата: ${formatDate(calc.created_at)}` }));
+            children.push(
+                new Table({
+                    width: {
+                        size: 100,
+                        type: WidthType.PERCENTAGE
+                    },
+                    borders: {
+                        top: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" },
+                        bottom: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" },
+                        left: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" },
+                        right: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" },
+                        insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" },
+                        insideVertical: { style: BorderStyle.SINGLE, size: 1, color: "DDDDDD" }
+                    },
+                    rows: [
+                        createLabelValueRow("Тип", "Розрахунок"),
+                        createLabelValueRow("Розділ", calc.section || "-"),
+                        createLabelValueRow("Назва формули", calc.formula_name || "-"),
+                        createLabelValueRow("Формула", calc.formula || "-"),
+                        createLabelValueRow("Вхідні дані", inputLines),
+                        createLabelValueRow("Результат", `${calc.result || "-"} ${calc.unit || ""}`),
+                        createLabelValueRow("Дата розрахунку", formatDate(calc.created_at))
+                    ]
+                })
+            );
         }
     });
 
+    children.push(
+        new Paragraph({
+            children: [
+                new TextRun({
+                    text: "Документ сформовано веб-додатком «Теплоенергетик».",
+                    italics: true,
+                    color: "666666"
+                })
+            ],
+            alignment: AlignmentType.CENTER,
+            spacing: {
+                before: 400
+            }
+        })
+    );
+
     const docxDocument = new Document({
+        creator: "Теплоенергетик",
+        title: selectedProject.title,
+        description: "Експорт проєкту з веб-додатку Теплоенергетик",
         sections: [
             {
                 properties: {},
@@ -1126,8 +1326,9 @@ async function exportSelectedProjectToDOCX() {
     link.remove();
 
     URL.revokeObjectURL(link.href);
-}
 
+    showOfficeMessage("DOCX проєкту сформовано.", "success");
+}
 
 /* =========================================================
    ОБРОБНИКИ ПОДІЙ
