@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Теплоенергетик — Калькулятор-довідник</title>
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem("theme") || "light";
+            const color = localStorage.getItem("color_scheme") || "green";
+            const fontSize = localStorage.getItem("font_size") || "normal";
+
+            document.documentElement.setAttribute("data-theme", theme);
+            document.documentElement.setAttribute("data-color", color);
+            document.documentElement.setAttribute("data-font-size", fontSize);
+        })();
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+
+<body>
+
+    <!-- ================= НАВІГАЦІЯ ================= -->
+    <nav class="navbar navbar-expand-lg navbar-dark custom-nav fixed-top">
+        <div class="container">
+
+            <a class="navbar-brand brand-block" href="index.html">
+                <img src="assets/images/logo.png" alt="Логотип Теплоенергетик" class="brand-logo">
+                <span class="brand-text">Теплоенергетик</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+                <ul class="navbar-nav ms-auto nav-custom">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Головна</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="calculators.html">Калькулятори</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="directory.html">Довідник</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="office.html">Мій кабінет</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">Налаштування</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Вхід</a>
+                    </li>
+                </ul>
+
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= ОСНОВНИЙ КОНТЕНТ ================= -->
+    <main class="container main-content">
+
+        <!-- ================= ПРО ПРОЄКТ ================= -->
+        <section class="mb-5">
+            <h2 class="section-title">Про систему</h2>
+
+            <div class="row g-4 align-items-center">
+
+                <div class="col-lg-7">
+                    <div class="card p-4 h-100">
+                        <h4>Призначення веб-додатку</h4>
+
+                        <p>
+                            «Теплоенергетик» — це навчальний веб-додаток, призначений для виконання
+                            розрахунків за основними формулами теплоенергетики. Система поєднує
+                            інтерактивні калькулятори, довідкові таблиці, пояснення формул,
+                            графіки залежностей та збереження історії розрахунків.
+                        </p>
+
+                        <p class="mb-0">
+                            Додаток може використовуватися студентами, викладачами та користувачами,
+                            які виконують базові інженерні розрахунки, пов’язані з теплотою,
+                            паливом, водою, парою, газовими процесами та тепловими машинами.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card p-4 h-100">
+                        <h4>Основні технології</h4>
+
+                        <ul class="info-list mb-0">
+                            <li>HTML, CSS, JavaScript</li>
+                            <li>Bootstrap для адаптивного інтерфейсу</li>
+                            <li>Chart.js для побудови графіків</li>
+                            <li>Supabase для авторизації та бази даних</li>
+                            <li>jsPDF і DOCX для експорту проєктів</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= ФУНКЦІОНАЛ ================= -->
+        <section class="mb-5">
+            <h2 class="section-title">Функціонал системи</h2>
+
+            <div class="row g-4">
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <h4>Калькулятори</h4>
+                        <p>
+                            Розрахунки за формулами теплоенергетики: теплота, теплообмін,
+                            теплопровідність, конвекція, випромінювання, паливо, ККД і газові процеси.
+                        </p>
+                        <a href="calculators.html">Перейти до розрахунків</a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <h4>Довідник</h4>
+                        <p>
+                            Теоретичні пояснення, фізичні константи, властивості матеріалів,
+                            теплота згоряння палива та таблиці перетворення одиниць.
+                        </p>
+                        <a href="directory.html">Відкрити довідник</a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <h4>Журнал розрахунків</h4>
+                        <p>
+                            Збереження виконаних розрахунків у базі даних користувача,
+                            фільтрація за датою, перегляд деталей і експорт у CSV.
+                        </p>
+                        <a href="office.html">Перейти в кабінет</a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <h4>Проєкти</h4>
+                        <p>
+                            Створення власних проєктів, додавання нотаток, результатів розрахунків,
+                            графіків і подальший експорт у PDF або DOCX.
+                        </p>
+                        <a href="office.html">Керувати проєктами</a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <h4>Персоналізація</h4>
+                        <p>
+                            Налаштування профілю користувача, вибір аватара, зміна теми,
+                            кольорової гами та розміру шрифту.
+                        </p>
+                        <a href="settings.html">Відкрити налаштування</a>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card h-100">
+                        <h4>Адміністрування</h4>
+                        <p>
+                            Прихована панель адміністратора для перегляду користувачів,
+                            розрахунків, проєктів і видалення даних у межах системи.
+                        </p>
+                        <a href="admin.html">Адмін-панель</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= РОЗДІЛИ КАЛЬКУЛЯТОРІВ ================= -->
+        <section class="mb-5">
+            <h2 class="section-title">Розділи калькуляторів</h2>
+
+            <div class="card p-4">
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <ul class="info-list mb-0">
+                            <li>Теплова енергія та кількість теплоти</li>
+                            <li>Теплообмін</li>
+                            <li>Теплопровідність</li>
+                            <li>Конвекція та випромінювання</li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-6">
+                        <ul class="info-list mb-0">
+                            <li>Вода, пара та вологе повітря</li>
+                            <li>Паливо та горіння</li>
+                            <li>Теплові машини та ККД</li>
+                            <li>Газові процеси</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= МОЖЛИВОСТІ ================= -->
+        <section class="mb-5">
+            <h2 class="section-title">Основні можливості</h2>
+
+            <div class="row g-4">
+
+                <div class="col-lg-6">
+                    <div class="card p-4 h-100">
+                        <h4>Для користувача</h4>
+
+                        <ul class="info-list mb-0">
+                            <li>реєстрація та вхід у профіль;</li>
+                            <li>виконання розрахунків за формулами;</li>
+                            <li>перевірка правильності введених даних;</li>
+                            <li>збереження історії розрахунків;</li>
+                            <li>створення проєктів і нотаток;</li>
+                            <li>експорт історії та проєктів;</li>
+                            <li>зміна теми, кольору та аватара.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card p-4 h-100">
+                        <h4>Для навчального проєкту</h4>
+
+                        <ul class="info-list mb-0">
+                            <li>адаптивний дизайн для ПК, планшета і смартфона;</li>
+                            <li>робота з базою даних Supabase;</li>
+                            <li>розмежування доступу через ролі користувачів;</li>
+                            <li>використання Row Level Security;</li>
+                            <li>побудова графіків залежностей;</li>
+                            <li>експорт результатів у CSV, PDF і DOCX;</li>
+                            <li>структурований технічний довідник.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= ШВИДКИЙ СТАРТ ================= -->
+        <section class="mb-5">
+            <h2 class="section-title">Як почати роботу</h2>
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <div class="card p-4 h-100 text-center">
+                        <h4>1. Зареєструйтесь</h4>
+                        <p>
+                            Створіть акаунт, щоб система могла зберігати вашу історію розрахунків і проєкти.
+                        </p>
+                        <a href="register.html" class="btn btn-main">
+                            Реєстрація
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card p-4 h-100 text-center">
+                        <h4>2. Виконайте розрахунок</h4>
+                        <p>
+                            Оберіть розділ, формулу, введіть параметри та отримайте результат із графіком.
+                        </p>
+                        <a href="calculators.html" class="btn btn-main">
+                            Калькулятори
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card p-4 h-100 text-center">
+                        <h4>3. Створіть проєкт</h4>
+                        <p>
+                            Додайте розрахунки й нотатки до власного проєкту та експортуйте результат.
+                        </p>
+                        <a href="office.html" class="btn btn-main">
+                            Мій кабінет
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= КОНТАКТИ ================= -->
+        <section>
+            <h2 class="section-title">Контакти розробника</h2>
+
+            <div class="contact-card">
+                <p><strong>Назва проєкту:</strong> Веб калькулятор-довідник теплоенергетика</p>
+                <p><strong>Розробник:</strong> Мойсієнко Андрій з групи ТВ-43</p>
+                <p><strong>Email:</strong> moisiienko.andrii@lll.kpi.ua</p>
+                <p class="mb-0"><strong>Рік:</strong> 2026</p>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ================= ФУТЕР ================= -->
+    <footer class="footer">
+        © 2026 КАЛЬКУЛЯТОР ТЕПЛОЕНЕРГЕТИК
+    </footer>
+
+    <div id="siteModal" class="site-modal d-none">
+        <div class="site-modal-backdrop"></div>
+
+        <div class="site-modal-dialog">
+            <button type="button" class="site-modal-close" id="siteModalCloseBtn">
+                &times;
+            </button>
+
+            <h3 class="site-modal-title" id="siteModalTitle">Повідомлення</h3>
+
+            <div class="site-modal-body" id="siteModalBody">
+                Текст повідомлення
+            </div>
+
+            <div class="site-modal-actions" id="siteModalActions">
+                <button type="button" class="btn btn-outline-secondary" id="siteModalCancelBtn">
+                    Скасувати
+                </button>
+
+                <button type="button" class="btn btn-main" id="siteModalOkBtn">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/supabase-client.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
