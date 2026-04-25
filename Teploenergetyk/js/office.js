@@ -38,6 +38,7 @@ const projectDetails = document.getElementById("projectDetails");
 const selectedProjectTitle = document.getElementById("selectedProjectTitle");
 const selectedProjectDescription = document.getElementById("selectedProjectDescription");
 const selectedProjectId = document.getElementById("selectedProjectId");
+const selectedProjectTheme = document.getElementById("selectedProjectTheme");
 
 const exportProjectPdfBtn = document.getElementById("exportProjectPdfBtn");
 const exportProjectDocxBtn = document.getElementById("exportProjectDocxBtn");
@@ -50,6 +51,7 @@ const calculationToProjectSelect = document.getElementById("calculationToProject
 const addCalculationToProjectBtn = document.getElementById("addCalculationToProjectBtn");
 
 const projectItemsList = document.getElementById("projectItemsList");
+const projectCalculationHint = document.getElementById("projectCalculationHint");
 
 
 /* =========================================================
@@ -99,6 +101,43 @@ function formatDate(dateString) {
         hour: "2-digit",
         minute: "2-digit"
     });
+}
+
+function formatInputData(inputData) {
+    if (!inputData || typeof inputData !== "object") {
+        return "Вхідні дані відсутні";
+    }
+
+    const labels = {
+        c: "Питома теплоємність c",
+        m: "Маса m",
+        dt: "Зміна температури Δt",
+        lambda: "Питома теплота плавлення λ",
+        r: "Питома теплота пароутворення r",
+        q: "Кількість теплоти Q",
+        q1: "Q1",
+        q2: "Q2",
+        q3: "Q3",
+        tau: "Час τ",
+        k: "Коефіцієнт теплопередачі k",
+        f: "Площа поверхні F",
+        delta: "Різниця температур",
+        alpha: "Коефіцієнт тепловіддачі α",
+        a: "Коефіцієнт температуропровідності a",
+        l: "Довжина l",
+        t1: "Температура t1",
+        t2: "Температура t2",
+        v: "Об’єм V",
+        p: "Тиск p",
+        T: "Температура T"
+    };
+
+    return Object.entries(inputData)
+        .map(([key, value]) => {
+            const label = labels[key] || key;
+            return `${label}: ${value}`;
+        })
+        .join("\n");
 }
 
 function escapeHtml(value) {
@@ -295,14 +334,19 @@ function showCalculationDetails(calculationId) {
 
     if (!item) return;
 
-    const inputs = JSON.stringify(item.input_data, null, 2);
+    const inputs = formatInputData(item.input_data);
 
-    alert(
+    const message =
         `Формула: ${item.formula_name}\n` +
-        `Розділ: ${item.section}\n` +
+        `Розділ: ${item.section}\n\n` +
         `Вхідні дані:\n${inputs}\n\n` +
-        `Результат: ${item.result} ${item.unit || ""}`
-    );
+        `Результат: ${item.result} ${item.unit || ""}`;
+
+    if (typeof showSiteAlert === "function") {
+        showSiteAlert(message, "Деталі розрахунку");
+    } else {
+        alert(message);
+    }
 }
 
 
@@ -498,7 +542,9 @@ function renderProjects() {
                         </small>
                     </div>
                 </div>
-
+                <div class="project-card-theme">
+                    Тематика: ${escapeHtml(project.theme || "Інше")}
+                </div>
                 <p class="project-card-description">
                     ${escapeHtml(project.description || "Без опису")}
                 </p>
@@ -520,6 +566,9 @@ async function selectProject(projectId) {
     selectedProjectTitle.textContent = selectedProject.title;
     selectedProjectDescription.textContent = selectedProject.description || "Без опису";
     selectedProjectId.textContent = selectedProject.id;
+    if (selectedProjectTheme) {
+        selectedProjectTheme.textContent = selectedProject.theme || "Інше";
+    }
 
     projectDetails.classList.remove("d-none");
 
@@ -634,6 +683,7 @@ function renderProjectItems() {
             `;
         }
 
+
         if (item.item_type === "calculation" && item.calculations) {
             const calc = item.calculations;
 
@@ -680,6 +730,38 @@ function renderProjectItems() {
     }).join("");
 }
 
+function fillCalculationSelect() {
+    if (!calculationToProjectSelect) return;
+
+    if (!calculations || calculations.length === 0) {
+        calculationToProjectSelect.innerHTML = `
+            <option value="">Немає доступних розрахунків</option>
+        `;
+
+        if (projectCalculationHint) {
+            projectCalculationHint.classList.remove("d-none");
+        }
+
+        return;
+    }
+
+    if (projectCalculationHint) {
+        projectCalculationHint.classList.add("d-none");
+    }
+
+    calculationToProjectSelect.innerHTML = `
+        <option value="">Оберіть розрахунок</option>
+    `;
+
+    calculations.forEach(calc => {
+        const option = document.createElement("option");
+
+        option.value = calc.id;
+        option.textContent = `${formatDate(calc.created_at)} — ${calc.formula_name} = ${calc.result} ${calc.unit || ""}`;
+
+        calculationToProjectSelect.appendChild(option);
+    });
+}
 
 async function addNoteToProject(event) {
     event.preventDefault();
@@ -813,83 +895,114 @@ function exportSelectedProjectToPDF() {
         return;
     }
 
-    if (!window.jspdf) {
-        showOfficeMessage("Бібліотека jsPDF не підключена.", "danger");
+    if (!window.pdfMake) {
+        showOfficeMessage("Бібліотека pdfMake не підключена.", "danger");
         return;
     }
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    const content = [];
 
-    let y = 15;
+    content.push({
+        text: `Проєкт: ${selectedProject.title}`,
+        style: "title"
+    });
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text(`Project: ${selectedProject.title}`, 10, y);
+    content.push({
+        text: `Опис: ${selectedProject.description || "Без опису"}`,
+        margin: [0, 8, 0, 4]
+    });
 
-    y += 10;
+    content.push({
+        text: `Тематика: ${selectedProject.theme || "Інше"}`,
+        margin: [0, 0, 0, 4]
+    });
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
+    content.push({
+        text: `Створено: ${formatDate(selectedProject.created_at)}`,
+        margin: [0, 0, 0, 14]
+    });
 
-    const description = selectedProject.description || "No description";
-    const descriptionLines = doc.splitTextToSize(`Description: ${description}`, 180);
+    content.push({
+        text: "Елементи проєкту",
+        style: "sectionTitle"
+    });
 
-    doc.text(descriptionLines, 10, y);
-    y += descriptionLines.length * 7 + 5;
-
-    doc.text(`Created: ${formatDate(selectedProject.created_at)}`, 10, y);
-    y += 12;
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Project items:", 10, y);
-    y += 10;
-
-    doc.setFont("helvetica", "normal");
-
-    if (selectedProjectItems.length === 0) {
-        doc.text("No items.", 10, y);
+    if (!selectedProjectItems || selectedProjectItems.length === 0) {
+        content.push({
+            text: "У проєкті немає елементів.",
+            italics: true,
+            margin: [0, 8, 0, 0]
+        });
     }
 
     selectedProjectItems.forEach((item, index) => {
-        if (y > 270) {
-            doc.addPage();
-            y = 15;
-        }
-
-        doc.setFont("helvetica", "bold");
-        doc.text(`${index + 1}. ${item.item_type}`, 10, y);
-        y += 8;
-
-        doc.setFont("helvetica", "normal");
-
         if (item.item_type === "note") {
-            const lines = doc.splitTextToSize(`Note: ${item.note || ""}`, 180);
-            doc.text(lines, 10, y);
-            y += lines.length * 7 + 5;
+            content.push({
+                text: `${index + 1}. Нотатка`,
+                style: "itemTitle"
+            });
+
+            content.push({
+                text: item.note || "",
+                margin: [0, 0, 0, 10]
+            });
         }
 
         if (item.item_type === "calculation" && item.calculations) {
             const calc = item.calculations;
 
-            const lines = [
-                `Section: ${calc.section}`,
-                `Formula: ${calc.formula_name}`,
-                `Expression: ${calc.formula || "-"}`,
-                `Result: ${calc.result} ${calc.unit || ""}`
-            ];
-
-            lines.forEach(line => {
-                const split = doc.splitTextToSize(line, 180);
-                doc.text(split, 10, y);
-                y += split.length * 7;
+            content.push({
+                text: `${index + 1}. Розрахунок`,
+                style: "itemTitle"
             });
 
-            y += 4;
+            content.push({
+                table: {
+                    widths: ["30%", "70%"],
+                    body: [
+                        ["Розділ", calc.section || "-"],
+                        ["Формула", calc.formula_name || "-"],
+                        ["Вираз", calc.formula || "-"],
+                        ["Результат", `${calc.result || "-"} ${calc.unit || ""}`],
+                        ["Дата", formatDate(calc.created_at)]
+                    ]
+                },
+                layout: "lightHorizontalLines",
+                margin: [0, 0, 0, 12]
+            });
         }
     });
 
-    doc.save(`${safeFileName(selectedProject.title)}.pdf`);
+    const docDefinition = {
+        pageSize: "A4",
+        pageMargins: [40, 40, 40, 40],
+
+        content: content,
+
+        defaultStyle: {
+            fontSize: 11
+        },
+
+        styles: {
+            title: {
+                fontSize: 18,
+                bold: true,
+                margin: [0, 0, 0, 10]
+            },
+            sectionTitle: {
+                fontSize: 15,
+                bold: true,
+                margin: [0, 12, 0, 8]
+            },
+            itemTitle: {
+                fontSize: 13,
+                bold: true,
+                margin: [0, 10, 0, 6]
+            }
+        }
+    };
+
+    pdfMake.createPdf(docDefinition).download(`${safeFileName(selectedProject.title)}.pdf`);
 
     showOfficeMessage("PDF проєкту сформовано.", "success");
 }
@@ -993,7 +1106,7 @@ async function exportSelectedProjectToDOCX() {
         }
     });
 
-    const document = new Document({
+    const docxDocument = new Document({
         sections: [
             {
                 properties: {},
@@ -1002,16 +1115,17 @@ async function exportSelectedProjectToDOCX() {
         ]
     });
 
-    const blob = await Packer.toBlob(document);
+    const blob = await Packer.toBlob(docxDocument);
 
-    const link = document.createElement("a");
+    const link = window.document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `${safeFileName(selectedProject.title)}.docx`;
+
+    window.document.body.appendChild(link);
     link.click();
+    link.remove();
 
     URL.revokeObjectURL(link.href);
-
-    showOfficeMessage("DOCX проєкту сформовано.", "success");
 }
 
 

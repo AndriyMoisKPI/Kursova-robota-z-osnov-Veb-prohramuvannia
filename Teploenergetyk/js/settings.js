@@ -497,7 +497,6 @@ async function updatePassword(event) {
     showSettingsMessage("Пароль успішно змінено.", "success");
 }
 
-
 /* =========================================================
    ОБРОБНИКИ ПОДІЙ
 ========================================================= */
@@ -539,8 +538,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (deleteAccountBtn) {
         deleteAccountBtn.addEventListener("click", deleteAccountData);
     }
-   
+
     if (passwordForm) {
-       passwordForm.addEventListener("submit", updatePassword);
-   }
+        passwordForm.addEventListener("submit", updatePassword);
+    }
 });
