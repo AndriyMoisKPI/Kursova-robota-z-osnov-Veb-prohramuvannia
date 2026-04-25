@@ -655,20 +655,3 @@ textarea.form-control {
     }
 }
 
-/* ================= ПОВІДОМЛЕННЯ ПРО НЕПОБУДОВУ ГРАФІКА ================= */
-
-#chartEmpty,
-.chart-empty,
-.chart-empty-message {
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-}
-
-html[data-theme="dark"] #chartEmpty,
-html[data-theme="dark"] .chart-empty,
-html[data-theme="dark"] .chart-empty-message {
-    background-color: #101c18;
-    color: #e8eeee;
-    border-color: #34413e;
-}
