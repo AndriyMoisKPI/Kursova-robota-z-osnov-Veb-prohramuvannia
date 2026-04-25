@@ -29,6 +29,11 @@ const avatarButtons = document.querySelectorAll(".avatar-option");
 const logoutSettingsBtn = document.getElementById("logoutSettingsBtn");
 const deleteAccountBtn = document.getElementById("deleteAccountBtn");
 
+const passwordForm = document.getElementById("passwordForm");
+const oldPasswordInput = document.getElementById("oldPasswordInput");
+const newPasswordInput = document.getElementById("newPasswordInput");
+const repeatPasswordInput = document.getElementById("repeatPasswordInput");
+
 
 let currentUser = null;
 let currentProfileData = null;
@@ -420,6 +425,78 @@ async function getUserProjectIds(userId) {
     return data.map(project => project.id);
 }
 
+/* =========================================================
+   ЗМІНА ПАРОЛЮ
+========================================================= */
+
+async function updatePassword(event) {
+    event.preventDefault();
+    hideSettingsMessage();
+
+    if (!currentUser) {
+        showSettingsMessage("Користувач не авторизований.", "danger");
+        return;
+    }
+
+    const oldPassword = oldPasswordInput.value;
+    const newPassword = newPasswordInput.value;
+    const repeatPassword = repeatPasswordInput.value;
+
+    if (!oldPassword || !newPassword || !repeatPassword) {
+        showSettingsMessage("Заповніть усі поля зміни паролю.", "danger");
+        return;
+    }
+
+    if (newPassword.length < 6) {
+        showSettingsMessage("Новий пароль має містити мінімум 6 символів.", "danger");
+        return;
+    }
+
+    if (newPassword !== repeatPassword) {
+        showSettingsMessage("Нові паролі не співпадають.", "danger");
+        return;
+    }
+
+    if (oldPassword === newPassword) {
+        showSettingsMessage("Новий пароль має відрізнятися від старого.", "warning");
+        return;
+    }
+
+    const email = currentUser.email || currentProfileData?.email;
+
+    if (!email) {
+        showSettingsMessage("Не вдалося визначити email користувача.", "danger");
+        return;
+    }
+
+    /*
+       Перевіряємо старий пароль через повторний вхід.
+       Якщо пароль неправильний — Supabase поверне помилку.
+    */
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: oldPassword
+    });
+
+    if (signInError) {
+        showSettingsMessage("Старий пароль введено неправильно.", "danger");
+        return;
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword
+    });
+
+    if (updateError) {
+        showSettingsMessage(`Помилка зміни паролю: ${updateError.message}`, "danger");
+        return;
+    }
+
+    passwordForm.reset();
+
+    showSettingsMessage("Пароль успішно змінено.", "success");
+}
+
 
 /* =========================================================
    ОБРОБНИКИ ПОДІЙ
@@ -462,4 +539,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (deleteAccountBtn) {
         deleteAccountBtn.addEventListener("click", deleteAccountData);
     }
+   
+    if (passwordForm) {
+       passwordForm.addEventListener("submit", updatePassword);
+   }
 });
