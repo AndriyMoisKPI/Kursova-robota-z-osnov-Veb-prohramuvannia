@@ -34,6 +34,8 @@ const oldPasswordInput = document.getElementById("oldPasswordInput");
 const newPasswordInput = document.getElementById("newPasswordInput");
 const repeatPasswordInput = document.getElementById("repeatPasswordInput");
 
+const avatarGrid = document.querySelector(".avatar-grid");
+const showAllAvatarsBtn = document.getElementById("showAllAvatarsBtn");
 
 let currentUser = null;
 let currentProfileData = null;
@@ -541,5 +543,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (passwordForm) {
         passwordForm.addEventListener("submit", updatePassword);
+    }
+
+    if (avatarGrid && showAllAvatarsBtn) {
+        avatarGrid.classList.add("avatar-collapsed");
+
+        showAllAvatarsBtn.addEventListener("click", () => {
+            avatarGrid.classList.toggle("avatar-collapsed");
+
+            const isCollapsed = avatarGrid.classList.contains("avatar-collapsed");
+
+            showAllAvatarsBtn.textContent = isCollapsed
+                ? "Показати всі аватарки"
+                : "Сховати зайві аватарки";
+        });
     }
 });
