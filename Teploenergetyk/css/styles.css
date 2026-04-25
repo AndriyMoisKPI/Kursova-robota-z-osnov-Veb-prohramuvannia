@@ -462,6 +462,14 @@ textarea.form-control {
         object-fit: contain;
     }
 
+/* ================= КНОПКА ДЛЯ АВАТАРОК НА МОБІЛКАХ ================= */
+
+@media (max-width: 767.98px) {
+    .avatar-grid.avatar-collapsed .avatar-option:nth-child(n + 7) {
+        display: none;
+    }
+}
+
 /* ================= СТОРІНКИ ВХОДУ ТА РЕЄСТРАЦІЇ ================= */
 
 .auth-body {
