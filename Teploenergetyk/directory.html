@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Довідник — Теплоенергетик</title>
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem("theme") || "light";
+            const color = localStorage.getItem("color_scheme") || "green";
+            const fontSize = localStorage.getItem("font_size") || "normal";
+
+            document.documentElement.setAttribute("data-theme", theme);
+            document.documentElement.setAttribute("data-color", color);
+            document.documentElement.setAttribute("data-font-size", fontSize);
+        })();
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+
+<body>
+
+    <!-- ================= НАВІГАЦІЯ ================= -->
+    <nav class="navbar navbar-expand-lg navbar-dark custom-nav fixed-top">
+        <div class="container">
+
+            <a class="navbar-brand brand-block" href="index.html">
+                <img src="assets/images/logo.png" alt="Логотип Теплоенергетик" class="brand-logo">
+                <span class="brand-text">Теплоенергетик</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+                <ul class="navbar-nav ms-auto nav-custom">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Головна</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="calculators.html">Калькулятори</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" href="directory.html">Довідник</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="office.html">Мій кабінет</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">Налаштування</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Вхід</a>
+                    </li>
+                </ul>
+
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= ОСНОВНИЙ КОНТЕНТ ================= -->
+    <main class="container main-content">
+
+        <!-- ================= ШВИДКА НАВІГАЦІЯ ================= -->
+        <section class="mb-5">
+            <h2 class="section-title">Розділи довідника</h2>
+
+            <div class="row g-3">
+
+                <div class="col-md-6 col-lg-3">
+                    <a href="#formulas" class="directory-link-card">
+                        Формули
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <a href="#constants" class="directory-link-card">
+                        Фізичні константи
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <a href="#materials" class="directory-link-card">
+                        Властивості матеріалів
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <a href="#fuel" class="directory-link-card">
+                        Паливо та горіння
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <a href="#heat-transfer" class="directory-link-card">
+                        Теплопередача
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <a href="#water-steam" class="directory-link-card">
+                        Вода і пара
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <a href="#units" class="directory-link-card">
+                        Одиниці вимірювання
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <a href="#theory" class="directory-link-card">
+                        Теорія
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= ФОРМУЛИ ================= -->
+        <section id="formulas" class="mb-5">
+            <h2 class="section-title">Основні формули</h2>
+
+            <div class="accordion" id="formulasAccordion">
+
+                <!-- 1 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingHeat">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHeat">
+                            1. Теплова енергія та кількість теплоти
+                        </button>
+                    </h2>
+
+                    <div id="collapseHeat" class="accordion-collapse collapse show" data-bs-parent="#formulasAccordion">
+                        <div class="accordion-body">
+                            <div class="table-responsive">
+                                <table class="table table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>Назва</th>
+                                            <th>Формула</th>
+                                            <th>Пояснення</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Кількість теплоти при нагріванні</td>
+                                            <td><strong>Q = c · m · Δt</strong></td>
+                                            <td>Кількість теплоти залежить від маси, питомої теплоємності та зміни температури.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Кількість теплоти при плавленні</td>
+                                            <td><strong>Q = λ · m</strong></td>
+                                            <td>Використовується під час переходу речовини з твердого стану в рідкий.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Кількість теплоти при пароутворенні</td>
+                                            <td><strong>Q = r · m</strong></td>
+                                            <td>Описує теплоту, потрібну для перетворення рідини на пару.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Повна кількість теплоти</td>
+                                            <td><strong>Qзаг = Q1 + Q2 + Q3</strong></td>
+                                            <td>Сума теплот на окремих етапах процесу.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Теплова потужність</td>
+                                            <td><strong>N = Q / τ</strong></td>
+                                            <td>Показує, скільки теплоти передається за одиницю часу.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingExchange">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExchange">
+                            2. Теплообмін
+                        </button>
+                    </h2>
+
+                    <div id="collapseExchange" class="accordion-collapse collapse" data-bs-parent="#formulasAccordion">
+                        <div class="accordion-body">
+                            <div class="table-responsive">
+                                <table class="table table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>Назва</th>
+                                            <th>Формула</th>
+                                            <th>Пояснення</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Основне рівняння теплопередачі</td>
+                                            <td><strong>Q = k · F · Δt · τ</strong></td>
+                                            <td>Описує кількість теплоти, передану через поверхню теплообміну.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Тепловий потік</td>
+                                            <td><strong>q = Q / τ</strong></td>
+                                            <td>Кількість теплоти, що проходить за одиницю часу.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Густина теплового потоку</td>
+                                            <td><strong>q = Q / F</strong></td>
+                                            <td>Кількість теплоти на одиницю площі.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Коефіцієнт теплопередачі</td>
+                                            <td><strong>k = Q / (F · Δt · τ)</strong></td>
+                                            <td>Характеризує інтенсивність теплопередачі.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Логарифмічна середня різниця температур</td>
+                                            <td><strong>Δtср = (Δt1 - Δt2) / ln(Δt1 / Δt2)</strong></td>
+                                            <td>Застосовується в теплообмінниках.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingConduction">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseConduction">
+                            3. Теплопровідність
+                        </button>
+                    </h2>
+
+                    <div id="collapseConduction" class="accordion-collapse collapse" data-bs-parent="#formulasAccordion">
+                        <div class="accordion-body">
+                            <div class="table-responsive">
+                                <table class="table table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>Назва</th>
+                                            <th>Формула</th>
+                                            <th>Пояснення</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Закон Фур’є</td>
+                                            <td><strong>Q = λ · F · Δt · τ / δ</strong></td>
+                                            <td>Описує передачу теплоти через шар матеріалу.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Тепловий опір шару</td>
+                                            <td><strong>R = δ / λ</strong></td>
+                                            <td>Залежить від товщини шару та теплопровідності матеріалу.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Опір багатошарової стінки</td>
+                                            <td><strong>Rзаг = R1 + R2 + ... + Rn</strong></td>
+                                            <td>Сума теплових опорів усіх шарів.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Тепловий потік через стінку</td>
+                                            <td><strong>q = Δt / Rзаг</strong></td>
+                                            <td>Залежить від різниці температур і загального опору.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Коефіцієнт теплопровідності</td>
+                                            <td><strong>λ = Q · δ / (F · Δt · τ)</strong></td>
+                                            <td>Властивість матеріалу проводити теплоту.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingRadiation">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRadiation">
+                            4. Конвекція та випромінювання
+                        </button>
+                    </h2>
+
+                    <div id="collapseRadiation" class="accordion-collapse collapse" data-bs-parent="#formulasAccordion">
+                        <div class="accordion-body">
+                            <div class="table-responsive">
+                                <table class="table table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>Назва</th>
+                                            <th>Формула</th>
+                                            <th>Пояснення</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Тепловіддача конвекцією</td>
+                                            <td><strong>Q = α · F · Δt · τ</strong></td>
+                                            <td>Передача теплоти між поверхнею і рухомим середовищем.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Коефіцієнт тепловіддачі</td>
+                                            <td><strong>α = Q / (F · Δt · τ)</strong></td>
+                                            <td>Характеризує інтенсивність конвективного теплообміну.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Закон Стефана — Больцмана</td>
+                                            <td><strong>E = ε · σ · T⁴</strong></td>
+                                            <td>Описує енергію теплового випромінювання тіла.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Випромінювання між поверхнями</td>
+                                            <td><strong>Q = ε · σ · F · (T1⁴ - T2⁴) · τ</strong></td>
+                                            <td>Передача теплоти випромінюванням між двома поверхнями.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingWater">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWater">
+                            5. Вода, пара та вологе повітря
+                        </button>
+                    </h2>
+
+                    <div id="collapseWater" class="accordion-collapse collapse" data-bs-parent="#formulasAccordion">
+                        <div class="accordion-body">
+                            <div class="table-responsive">
+                                <table class="table table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>Назва</th>
+                                            <th>Формула</th>
+                                            <th>Пояснення</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Ентальпія води</td>
+                                            <td><strong>i = c · t</strong></td>
+                                            <td>Орієнтовна теплова характеристика води.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Нагрівання води</td>
+                                            <td><strong>Q = m · c · (t2 - t1)</strong></td>
+                                            <td>Кількість теплоти для зміни температури води.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Утворення пари</td>
+                                            <td><strong>Q = m · r</strong></td>
+                                            <td>Теплота, потрібна для пароутворення.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Витрата пари</td>
+                                            <td><strong>G = Q / (i1 - i2)</strong></td>
+                                            <td>Розрахунок масової витрати пари.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Відносна вологість</td>
+                                            <td><strong>φ = ρ / ρнас · 100%</strong></td>
+                                            <td>Відношення фактичної вологості до насиченої.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Абсолютна вологість</td>
+                                            <td><strong>ρ = mпари / V</strong></td>
+                                            <td>Маса водяної пари в одиниці об’єму.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFuel">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFuel">
+                            6. Паливо та горіння
+                        </button>
+                    </h2>
+
+                    <div id="collapseFuel" class="accordion-collapse collapse" data-bs-parent="#formulasAccordion">
+                        <div class="accordion-body">
+                            <div class="table-responsive">
+                                <table class="table table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>Назва</th>
+                                            <th>Формула</th>
+                                            <th>Пояснення</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Теплота згоряння палива</td>
+                                            <td><strong>Q = B · Qн</strong></td>
+                                            <td>Кількість теплоти, що виділяється при згорянні палива.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Витрата палива</td>
+                                            <td><strong>B = Q / Qн</strong></td>
+                                            <td>Маса або об’єм палива, потрібний для отримання теплоти.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Умовне паливо</td>
+                                            <td><strong>Bум = Q / 29300</strong></td>
+                                            <td>Переведення теплоти в умовне паливо.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ККД котельної установки</td>
+                                            <td><strong>η = Qкор / Qпал · 100%</strong></td>
+                                            <td>Оцінює ефективність використання теплоти палива.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Питома витрата палива</td>
+                                            <td><strong>b = B / N</strong></td>
+                                            <td>Витрата палива на одиницю потужності.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingEngine">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEngine">
+                            7. Теплові машини та ККД
+                        </button>
+                    </h2>
+
+                    <div id="collapseEngine" class="accordion-collapse collapse" data-bs-parent="#formulasAccordion">
+                        <div class="accordion-body">
+                            <div class="table-responsive">
+                                <table class="table table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>Назва</th>
+                                            <th>Формула</th>
+                                            <th>Пояснення</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>ККД теплової машини</td>
+                                            <td><strong>η = A / Q1 · 100%</strong></td>
+                                            <td>Показує частку теплоти, що перетворюється на корисну роботу.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ККД через теплоту</td>
+                                            <td><strong>η = (Q1 - Q2) / Q1 · 100%</strong></td>
+                                            <td>Розрахунок ККД за підведеною та відведеною теплотою.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ККД циклу Карно</td>
+                                            <td><strong>η = (T1 - T2) / T1 · 100%</strong></td>
+                                            <td>Ідеальний максимальний ККД теплової машини.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Корисна робота</td>
+                                            <td><strong>A = Q1 - Q2</strong></td>
+                                            <td>Різниця між підведеною та відведеною теплотою.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Потужність теплової машини</td>
+                                            <td><strong>N = A / τ</strong></td>
+                                            <td>Робота, виконана за одиницю часу.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingGas">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGas">
+                            8. Газові процеси
+                        </button>
+                    </h2>
+
+                    <div id="collapseGas" class="accordion-collapse collapse" data-bs-parent="#formulasAccordion">
+                        <div class="accordion-body">
+                            <div class="table-responsive">
+                                <table class="table table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>Назва</th>
+                                            <th>Формула</th>
+                                            <th>Пояснення</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Рівняння стану ідеального газу</td>
+                                            <td><strong>p · V = m · R · T</strong></td>
+                                            <td>Зв’язує тиск, об’єм, масу та температуру газу.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Рівняння Менделєєва — Клапейрона</td>
+                                            <td><strong>p · V = ν · R · T</strong></td>
+                                            <td>Рівняння стану газу через кількість речовини.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Закон Бойля — Маріотта</td>
+                                            <td><strong>p1 · V1 = p2 · V2</strong></td>
+                                            <td>Для ізотермічного процесу.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Закон Гей-Люссака</td>
+                                            <td><strong>V1 / T1 = V2 / T2</strong></td>
+                                            <td>Для ізобарного процесу.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Закон Шарля</td>
+                                            <td><strong>p1 / T1 = p2 / T2</strong></td>
+                                            <td>Для ізохорного процесу.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Робота газу</td>
+                                            <td><strong>A = p · ΔV</strong></td>
+                                            <td>Робота газу при сталому тиску.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Внутрішня енергія</td>
+                                            <td><strong>U = cv · m · T</strong></td>
+                                            <td>Орієнтовний розрахунок внутрішньої енергії газу.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= ФІЗИЧНІ КОНСТАНТИ ================= -->
+        <section id="constants" class="mb-5">
+            <h2 class="section-title">Фізичні константи</h2>
+
+            <div class="card p-4">
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Назва</th>
+                                <th>Позначення</th>
+                                <th>Значення</th>
+                                <th>Одиниця</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Універсальна газова стала</td>
+                                <td>R</td>
+                                <td>8.314</td>
+                                <td>Дж/(моль·К)</td>
+                            </tr>
+
+                            <tr>
+                                <td>Стала Стефана — Больцмана</td>
+                                <td>σ</td>
+                                <td>5.67 · 10⁻⁸</td>
+                                <td>Вт/(м²·К⁴)</td>
+                            </tr>
+
+                            <tr>
+                                <td>Питома теплоємність води</td>
+                                <td>c</td>
+                                <td>4.19</td>
+                                <td>кДж/(кг·°C)</td>
+                            </tr>
+
+                            <tr>
+                                <td>Питома теплота пароутворення води</td>
+                                <td>r</td>
+                                <td>2256</td>
+                                <td>кДж/кг</td>
+                            </tr>
+
+                            <tr>
+                                <td>Теплота згоряння умовного палива</td>
+                                <td>Qум</td>
+                                <td>29300</td>
+                                <td>кДж/кг</td>
+                            </tr>
+
+                            <tr>
+                                <td>Нормальний атмосферний тиск</td>
+                                <td>p₀</td>
+                                <td>101325</td>
+                                <td>Па</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= ВЛАСТИВОСТІ МАТЕРІАЛІВ ================= -->
+        <section id="materials" class="mb-5">
+            <h2 class="section-title">Властивості матеріалів</h2>
+
+            <div class="card p-4">
+                <h4>Коефіцієнти теплопровідності</h4>
+
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Матеріал</th>
+                                <th>Коефіцієнт λ</th>
+                                <th>Одиниця</th>
+                                <th>Примітка</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Мідь</td>
+                                <td>380–400</td>
+                                <td>Вт/(м·К)</td>
+                                <td>Висока теплопровідність</td>
+                            </tr>
+
+                            <tr>
+                                <td>Алюміній</td>
+                                <td>200–230</td>
+                                <td>Вт/(м·К)</td>
+                                <td>Використовується у теплообмінниках</td>
+                            </tr>
+
+                            <tr>
+                                <td>Сталь</td>
+                                <td>45–60</td>
+                                <td>Вт/(м·К)</td>
+                                <td>Поширений конструкційний матеріал</td>
+                            </tr>
+
+                            <tr>
+                                <td>Цегла</td>
+                                <td>0.5–0.8</td>
+                                <td>Вт/(м·К)</td>
+                                <td>Будівельний матеріал</td>
+                            </tr>
+
+                            <tr>
+                                <td>Бетон</td>
+                                <td>1.0–1.7</td>
+                                <td>Вт/(м·К)</td>
+                                <td>Залежить від густини</td>
+                            </tr>
+
+                            <tr>
+                                <td>Мінеральна вата</td>
+                                <td>0.035–0.045</td>
+                                <td>Вт/(м·К)</td>
+                                <td>Теплоізоляція</td>
+                            </tr>
+
+                            <tr>
+                                <td>Пінополістирол</td>
+                                <td>0.03–0.04</td>
+                                <td>Вт/(м·К)</td>
+                                <td>Теплоізоляційний матеріал</td>
+                            </tr>
+
+                            <tr>
+                                <td>Деревина</td>
+                                <td>0.12–0.20</td>
+                                <td>Вт/(м·К)</td>
+                                <td>Залежить від вологості</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= ПАЛИВО ================= -->
+        <section id="fuel" class="mb-5">
+            <h2 class="section-title">Теплота згоряння палива</h2>
+
+            <div class="card p-4">
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Паливо</th>
+                                <th>Нижча теплота згоряння</th>
+                                <th>Одиниця</th>
+                                <th>Використання</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Природний газ</td>
+                                <td>33000–36000</td>
+                                <td>кДж/м³</td>
+                                <td>Котельні, ТЕЦ, побут</td>
+                            </tr>
+
+                            <tr>
+                                <td>Кам’яне вугілля</td>
+                                <td>22000–29000</td>
+                                <td>кДж/кг</td>
+                                <td>Теплові електростанції</td>
+                            </tr>
+
+                            <tr>
+                                <td>Буре вугілля</td>
+                                <td>10000–17000</td>
+                                <td>кДж/кг</td>
+                                <td>Промислові котельні</td>
+                            </tr>
+
+                            <tr>
+                                <td>Мазут</td>
+                                <td>39000–42000</td>
+                                <td>кДж/кг</td>
+                                <td>Котельні установки</td>
+                            </tr>
+
+                            <tr>
+                                <td>Дизельне паливо</td>
+                                <td>42000–43000</td>
+                                <td>кДж/кг</td>
+                                <td>Двигуни, резервні генератори</td>
+                            </tr>
+
+                            <tr>
+                                <td>Дрова сухі</td>
+                                <td>12000–15000</td>
+                                <td>кДж/кг</td>
+                                <td>Опалення</td>
+                            </tr>
+
+                            <tr>
+                                <td>Пелети</td>
+                                <td>16000–19000</td>
+                                <td>кДж/кг</td>
+                                <td>Біопаливні котли</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= ТЕПЛОПЕРЕДАЧА ================= -->
+        <section id="heat-transfer" class="mb-5">
+            <h2 class="section-title">Коефіцієнти теплопередачі та тепловіддачі</h2>
+
+            <div class="card p-4">
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Процес</th>
+                                <th>Коефіцієнт</th>
+                                <th>Типові значення</th>
+                                <th>Одиниця</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Природна конвекція повітря</td>
+                                <td>α</td>
+                                <td>5–25</td>
+                                <td>Вт/(м²·К)</td>
+                            </tr>
+
+                            <tr>
+                                <td>Вимушена конвекція повітря</td>
+                                <td>α</td>
+                                <td>20–100</td>
+                                <td>Вт/(м²·К)</td>
+                            </tr>
+
+                            <tr>
+                                <td>Рух води в трубах</td>
+                                <td>α</td>
+                                <td>500–10000</td>
+                                <td>Вт/(м²·К)</td>
+                            </tr>
+
+                            <tr>
+                                <td>Конденсація пари</td>
+                                <td>α</td>
+                                <td>5000–20000</td>
+                                <td>Вт/(м²·К)</td>
+                            </tr>
+
+                            <tr>
+                                <td>Кипіння води</td>
+                                <td>α</td>
+                                <td>2500–25000</td>
+                                <td>Вт/(м²·К)</td>
+                            </tr>
+
+                            <tr>
+                                <td>Теплопередача через стінку теплообмінника</td>
+                                <td>k</td>
+                                <td>100–3000</td>
+                                <td>Вт/(м²·К)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= ВОДА І ПАРА ================= -->
+        <section id="water-steam" class="mb-5">
+            <h2 class="section-title">Вода, пара та вологе повітря</h2>
+
+            <div class="row g-4">
+
+                <div class="col-lg-6">
+                    <div class="card p-4 h-100">
+                        <h4>Питома теплоємність</h4>
+
+                        <div class="table-responsive">
+                            <table class="table table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>Речовина</th>
+                                        <th>c</th>
+                                        <th>Одиниця</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td>Вода</td>
+                                        <td>4.19</td>
+                                        <td>кДж/(кг·°C)</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Водяна пара</td>
+                                        <td>1.9–2.1</td>
+                                        <td>кДж/(кг·°C)</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Повітря</td>
+                                        <td>1.0</td>
+                                        <td>кДж/(кг·°C)</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Лід</td>
+                                        <td>2.1</td>
+                                        <td>кДж/(кг·°C)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-6">
+                    <div class="card p-4 h-100">
+                        <h4>Орієнтовні параметри</h4>
+
+                        <div class="table-responsive">
+                            <table class="table table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>Параметр</th>
+                                        <th>Значення</th>
+                                        <th>Одиниця</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td>Температура кипіння води при 1 атм</td>
+                                        <td>100</td>
+                                        <td>°C</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Температура замерзання води</td>
+                                        <td>0</td>
+                                        <td>°C</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Питома теплота пароутворення</td>
+                                        <td>2256</td>
+                                        <td>кДж/кг</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Питома теплота плавлення льоду</td>
+                                        <td>334</td>
+                                        <td>кДж/кг</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= ОДИНИЦІ ================= -->
+        <section id="units" class="mb-5">
+            <h2 class="section-title">Таблиця перетворення одиниць</h2>
+
+            <div class="card p-4">
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Величина</th>
+                                <th>Перетворення</th>
+                                <th>Примітка</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Енергія</td>
+                                <td>1 кДж = 1000 Дж</td>
+                                <td>Використовується для теплоти</td>
+                            </tr>
+
+                            <tr>
+                                <td>Енергія</td>
+                                <td>1 кВт·год = 3 600 000 Дж</td>
+                                <td>Поширено в енергетиці</td>
+                            </tr>
+
+                            <tr>
+                                <td>Енергія</td>
+                                <td>1 ккал = 4186.8 Дж</td>
+                                <td>Теплотехнічні розрахунки</td>
+                            </tr>
+
+                            <tr>
+                                <td>Потужність</td>
+                                <td>1 кВт = 1000 Вт</td>
+                                <td>Електрична і теплова потужність</td>
+                            </tr>
+
+                            <tr>
+                                <td>Об’єм</td>
+                                <td>1 м³ = 1000 л</td>
+                                <td>Вода, газ, пара</td>
+                            </tr>
+
+                            <tr>
+                                <td>Тиск</td>
+                                <td>1 бар = 100000 Па</td>
+                                <td>Котли, трубопроводи</td>
+                            </tr>
+
+                            <tr>
+                                <td>Тиск</td>
+                                <td>1 атм = 101325 Па</td>
+                                <td>Нормальний атмосферний тиск</td>
+                            </tr>
+
+                            <tr>
+                                <td>Температура</td>
+                                <td>K = °C + 273.15</td>
+                                <td>Для газових законів</td>
+                            </tr>
+
+                            <tr>
+                                <td>Маса</td>
+                                <td>1 т = 1000 кг</td>
+                                <td>Паливо, вода, пара</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <a href="calculators.html#units" class="btn btn-main mt-3">
+                    Перейти до конвертера
+                </a>
+            </div>
+        </section>
+
+
+        <!-- ================= ТЕОРІЯ ================= -->
+        <section id="theory" class="mb-5">
+            <h2 class="section-title">Короткі теоретичні відомості</h2>
+
+            <div class="row g-4">
+
+                <div class="col-lg-6">
+                    <div class="card p-4 h-100">
+                        <h4>Теплопередача</h4>
+                        <p>
+                            Теплопередача — це процес перенесення теплоти від тіла з вищою температурою
+                            до тіла з нижчою температурою. Основними видами теплопередачі є теплопровідність,
+                            конвекція та випромінювання.
+                        </p>
+                        <p class="mb-0">
+                            У теплоенергетиці ці процеси враховують під час розрахунку котлів,
+                            теплообмінників, трубопроводів, ізоляції та систем опалення.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card p-4 h-100">
+                        <h4>Теплопровідність</h4>
+                        <p>
+                            Теплопровідність — це передача теплоти всередині твердого тіла або нерухомого
+                            середовища. Вона залежить від коефіцієнта теплопровідності матеріалу, площі,
+                            різниці температур і товщини шару.
+                        </p>
+                        <p class="mb-0">
+                            Чим менше значення коефіцієнта теплопровідності, тим кращі теплоізоляційні
+                            властивості матеріалу.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card p-4 h-100">
+                        <h4>Конвекція</h4>
+                        <p>
+                            Конвекція — це перенесення теплоти потоками рідини або газу. Вона може бути
+                            природною, коли рух виникає через різницю густини, або вимушеною, коли рух
+                            створюється насосом, вентилятором чи іншим пристроєм.
+                        </p>
+                        <p class="mb-0">
+                            Конвекція важлива для систем вентиляції, опалення, охолодження та теплообмінників.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card p-4 h-100">
+                        <h4>Теплове випромінювання</h4>
+                        <p>
+                            Теплове випромінювання — це передача енергії електромагнітними хвилями.
+                            На відміну від теплопровідності та конвекції, воно може відбуватися навіть
+                            у вакуумі.
+                        </p>
+                        <p class="mb-0">
+                            У теплоенергетиці випромінювання враховують у топках котлів, печах,
+                            високотемпературних установках та при теплових втратах поверхонь.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ================= ФУТЕР ================= -->
+    <footer class="footer">
+        © 2026 КАЛЬКУЛЯТОР ТЕПЛОЕНЕРГЕТИК
+    </footer>
+
+    <div id="siteModal" class="site-modal d-none">
+        <div class="site-modal-backdrop"></div>
+
+        <div class="site-modal-dialog">
+            <button type="button" class="site-modal-close" id="siteModalCloseBtn">
+                &times;
+            </button>
+
+            <h3 class="site-modal-title" id="siteModalTitle">Повідомлення</h3>
+
+            <div class="site-modal-body" id="siteModalBody">
+                Текст повідомлення
+            </div>
+
+            <div class="site-modal-actions" id="siteModalActions">
+                <button type="button" class="btn btn-outline-secondary" id="siteModalCancelBtn">
+                    Скасувати
+                </button>
+
+                <button type="button" class="btn btn-main" id="siteModalOkBtn">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/supabase-client.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

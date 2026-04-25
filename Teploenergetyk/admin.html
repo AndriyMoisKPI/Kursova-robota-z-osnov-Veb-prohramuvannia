@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Адміністрування — Теплоенергетик</title>
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem("theme") || "light";
+            const color = localStorage.getItem("color_scheme") || "green";
+            const fontSize = localStorage.getItem("font_size") || "normal";
+
+            document.documentElement.setAttribute("data-theme", theme);
+            document.documentElement.setAttribute("data-color", color);
+            document.documentElement.setAttribute("data-font-size", fontSize);
+        })();
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+
+<body>
+
+    <!-- ================= НАВІГАЦІЯ ================= -->
+    <nav class="navbar navbar-expand-lg navbar-dark custom-nav fixed-top">
+        <div class="container">
+
+            <a class="navbar-brand brand-block" href="index.html">
+                <img src="assets/images/logo.png" alt="Логотип Теплоенергетик" class="brand-logo">
+                <span class="brand-text">Теплоенергетик</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+                <ul class="navbar-nav ms-auto nav-custom">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Головна</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="calculators.html">Калькулятори</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="directory.html">Довідник</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="office.html">Мій кабінет</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">Налаштування</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Вхід</a>
+                    </li>
+
+                </ul>
+
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= ОСНОВНИЙ КОНТЕНТ ================= -->
+    <main class="container main-content">
+
+        <div id="adminMessage" class="alert d-none" role="alert"></div>
+
+        <!-- ================= ІНФО ПРО АДМІНА ================= -->
+        <section class="card p-4 mb-4">
+            <h2 class="section-title">Поточний адміністратор</h2>
+
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <p class="mb-1">
+                        <strong>Email:</strong>
+                        <span id="adminEmail">-</span>
+                    </p>
+
+                    <p class="mb-1">
+                        <strong>Нікнейм:</strong>
+                        <span id="adminUsername">-</span>
+                    </p>
+
+                    <p class="mb-0">
+                        <strong>Роль:</strong>
+                        <span id="adminRole">-</span>
+                    </p>
+                </div>
+
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <button id="refreshAdminDataBtn" class="btn btn-main" type="button">
+                        Оновити дані
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= СТАТИСТИКА ================= -->
+        <section class="mb-4">
+            <h2 class="section-title">Статистика системи</h2>
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <div class="admin-stat-card">
+                        <h3 id="usersCount">0</h3>
+                        <p>Користувачів</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="admin-stat-card">
+                        <h3 id="calculationsCount">0</h3>
+                        <p>Розрахунків</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="admin-stat-card">
+                        <h3 id="projectsCount">0</h3>
+                        <p>Проєктів</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= ВКЛАДКИ ================= -->
+        <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active"
+                        id="users-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#usersTab"
+                        type="button"
+                        role="tab">
+                    Користувачі
+                </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button class="nav-link"
+                        id="calculations-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#calculationsTab"
+                        type="button"
+                        role="tab">
+                    Розрахунки
+                </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button class="nav-link"
+                        id="projects-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#projectsTab"
+                        type="button"
+                        role="tab">
+                    Проєкти
+                </button>
+            </li>
+
+        </ul>
+
+
+        <div class="tab-content">
+
+            <!-- ================= КОРИСТУВАЧІ ================= -->
+            <section class="tab-pane fade show active"
+                     id="usersTab"
+                     role="tabpanel">
+
+                <div class="card p-4 mb-4">
+                    <h2 class="section-title">Керування користувачами</h2>
+
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-8">
+                            <label for="userSearchInput" class="form-label">
+                                Пошук користувача
+                            </label>
+
+                            <input type="text"
+                                   id="userSearchInput"
+                                   class="form-control"
+                                   placeholder="Email або нікнейм">
+                        </div>
+
+                        <div class="col-md-4">
+                            <button id="refreshUsersBtn" class="btn btn-main w-100" type="button">
+                                Оновити
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card p-4">
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Email</th>
+                                    <th>Нікнейм</th>
+                                    <th>Роль</th>
+                                    <th>Тема</th>
+                                    <th>Дії</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        Завантаження...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- ================= РОЗРАХУНКИ ================= -->
+            <section class="tab-pane fade"
+                     id="calculationsTab"
+                     role="tabpanel">
+
+                <div class="card p-4 mb-4">
+                    <h2 class="section-title">Керування розрахунками</h2>
+
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-8">
+                            <label for="calculationSearchInput" class="form-label">
+                                Пошук розрахунку
+                            </label>
+
+                            <input type="text"
+                                   id="calculationSearchInput"
+                                   class="form-control"
+                                   placeholder="Назва формули, розділ або результат">
+                        </div>
+
+                        <div class="col-md-4">
+                            <button id="refreshCalculationsBtn" class="btn btn-main w-100" type="button">
+                                Оновити
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card p-4">
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Користувач</th>
+                                    <th>Розділ</th>
+                                    <th>Формула</th>
+                                    <th>Результат</th>
+                                    <th>Дії</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="adminCalculationsTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        Завантаження...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- ================= ПРОЄКТИ ================= -->
+            <section class="tab-pane fade"
+                     id="projectsTab"
+                     role="tabpanel">
+
+                <div class="card p-4 mb-4">
+                    <h2 class="section-title">Керування проєктами</h2>
+
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-8">
+                            <label for="projectSearchInput" class="form-label">
+                                Пошук проєкту
+                            </label>
+
+                            <input type="text"
+                                   id="projectSearchInput"
+                                   class="form-control"
+                                   placeholder="Назва, опис або користувач">
+                        </div>
+
+                        <div class="col-md-4">
+                            <button id="refreshAdminProjectsBtn" class="btn btn-main w-100" type="button">
+                                Оновити
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card p-4">
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Назва</th>
+                                    <th>Опис</th>
+                                    <th>Користувач</th>
+                                    <th>Тема</th>
+                                    <th>Дії</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="adminProjectsTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        Завантаження...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= ФУТЕР ================= -->
+    <footer class="footer">
+        © 2026 КАЛЬКУЛЯТОР ТЕПЛОЕНЕРГЕТИК
+    </footer>
+
+    <div id="siteModal" class="site-modal d-none">
+        <div class="site-modal-backdrop"></div>
+
+        <div class="site-modal-dialog">
+            <button type="button" class="site-modal-close" id="siteModalCloseBtn">
+                &times;
+            </button>
+
+            <h3 class="site-modal-title" id="siteModalTitle">Повідомлення</h3>
+
+            <div class="site-modal-body" id="siteModalBody">
+                Текст повідомлення
+            </div>
+
+            <div class="site-modal-actions" id="siteModalActions">
+                <button type="button" class="btn btn-outline-secondary" id="siteModalCancelBtn">
+                    Скасувати
+                </button>
+
+                <button type="button" class="btn btn-main" id="siteModalOkBtn">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/supabase-client.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

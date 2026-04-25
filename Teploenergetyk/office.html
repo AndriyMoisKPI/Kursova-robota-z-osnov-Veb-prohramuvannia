@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мій кабінет — Теплоенергетик</title>
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem("theme") || "light";
+            const color = localStorage.getItem("color_scheme") || "green";
+            const fontSize = localStorage.getItem("font_size") || "normal";
+
+            document.documentElement.setAttribute("data-theme", theme);
+            document.documentElement.setAttribute("data-color", color);
+            document.documentElement.setAttribute("data-font-size", fontSize);
+        })();
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/themes.css">
+</head>
+
+<body>
+
+    <!-- ================= НАВІГАЦІЯ ================= -->
+    <nav class="navbar navbar-expand-lg navbar-dark custom-nav fixed-top">
+        <div class="container">
+
+            <a class="navbar-brand brand-block" href="index.html">
+                <img src="assets/images/logo.png" alt="Логотип Теплоенергетик" class="brand-logo">
+                <span class="brand-text">Теплоенергетик</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+                <ul class="navbar-nav ms-auto nav-custom">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Головна</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="calculators.html">Калькулятори</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="directory.html">Довідник</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" href="office.html">Мій кабінет</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">Налаштування</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Вхід</a>
+                    </li>
+                </ul>
+
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= ОСНОВНИЙ КОНТЕНТ ================= -->
+    <main class="container main-content">
+
+        <div id="officeMessage" class="alert d-none" role="alert"></div>
+
+        <!-- ================= ПРОФІЛЬ КОРОТКО ================= -->
+        <section class="card p-4 mb-4">
+            <div class="row align-items-center">
+
+                <div class="col-md-8">
+                    <h2 class="section-title">Поточний користувач</h2>
+
+                    <p class="mb-1">
+                        <strong>Email:</strong>
+                        <span id="officeEmail">-</span>
+                    </p>
+
+                    <p class="mb-0">
+                        <strong>Нікнейм:</strong>
+                        <span id="officeUsername">-</span>
+                    </p>
+                </div>
+
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a href="settings.html" class="btn btn-main">
+                        Налаштування профілю
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= ВКЛАДКИ ================= -->
+        <ul class="nav nav-tabs mb-4" id="officeTabs" role="tablist">
+
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active"
+                        id="history-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#historyTab"
+                        type="button"
+                        role="tab">
+                    Журнал розрахунків
+                </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button class="nav-link"
+                        id="projects-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#projectsTab"
+                        type="button"
+                        role="tab">
+                    Проєкти
+                </button>
+            </li>
+
+        </ul>
+
+
+        <div class="tab-content">
+
+            <!-- ================= ЖУРНАЛ РОЗРАХУНКІВ ================= -->
+            <section class="tab-pane fade show active"
+                     id="historyTab"
+                     role="tabpanel">
+
+                <div class="card p-4 mb-4">
+                    <h2 class="section-title">Журнал розрахунків</h2>
+
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-4">
+                            <label for="historySearch" class="form-label">
+                                Пошук
+                            </label>
+                            <input type="text"
+                                   id="historySearch"
+                                   class="form-control"
+                                   placeholder="Назва формули або розділ">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="historyDateFrom" class="form-label">
+                                Дата від
+                            </label>
+                            <input type="date" id="historyDateFrom" class="form-control">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="historyDateTo" class="form-label">
+                                Дата до
+                            </label>
+                            <input type="date" id="historyDateTo" class="form-control">
+                        </div>
+
+                        <div class="col-md-2">
+                            <button id="applyHistoryFilterBtn" class="btn btn-main w-100" type="button">
+                                Фільтр
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4 d-flex flex-wrap gap-2">
+                        <button id="refreshHistoryBtn" class="btn btn-outline-secondary" type="button">
+                            Оновити
+                        </button>
+
+                        <button id="exportHistoryCsvBtn" class="btn btn-outline-success" type="button">
+                            Експорт CSV
+                        </button>
+
+                        <button id="deleteAllHistoryBtn" class="btn btn-outline-danger" type="button">
+                            Видалити всю історію
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="card p-4">
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Розділ</th>
+                                    <th>Формула</th>
+                                    <th>Результат</th>
+                                    <th>Дії</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="historyTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">
+                                        Завантаження...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- ================= ПРОЄКТИ ================= -->
+            <section class="tab-pane fade"
+                     id="projectsTab"
+                     role="tabpanel">
+
+                <!-- СТВОРЕННЯ ПРОЄКТУ -->
+                <div class="card p-4 mb-4">
+                    <h2 class="section-title">Створити проєкт</h2>
+
+                    <form id="projectForm">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+                                <label for="projectTitle" class="form-label">
+                                    Назва проєкту
+                                </label>
+                                <input type="text"
+                                       id="projectTitle"
+                                       class="form-control"
+                                       placeholder="Наприклад: Розрахунок котельні"
+                                       required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="projectTheme" class="form-label">
+                                    Тема проєкту
+                                </label>
+                                <select id="projectTheme" class="form-select">
+                                    <option value="green">Зелена</option>
+                                    <option value="blue">Синя</option>
+                                    <option value="red">Червона</option>
+                                    <option value="gray">Сіра</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="projectIcon" class="form-label">
+                                    Іконка
+                                </label>
+                                <select id="projectIcon" class="form-select">
+                                    <option value="assets/icons/icon-project.png">Проєкт</option>
+                                    <option value="assets/icons/icon-heat.png">Теплова енергія</option>
+                                    <option value="assets/icons/icon-fuel.png">Паливо</option>
+                                    <option value="assets/icons/icon-engine.png">Теплова машина</option>
+                                    <option value="assets/icons/icon-gas.png">Газ</option>
+                                    <option value="assets/icons/icon-water-steam.png">Вода і пара</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="projectDescription" class="form-label">
+                                    Опис
+                                </label>
+                                <textarea id="projectDescription"
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="Короткий опис проєкту"></textarea>
+                            </div>
+
+                        </div>
+
+                        <button type="submit" class="btn btn-main mt-4">
+                            Створити проєкт
+                        </button>
+
+                    </form>
+                </div>
+
+
+                <!-- СПИСОК ПРОЄКТІВ -->
+                <div class="card p-4 mb-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <h2 class="section-title mb-0">Мої проєкти</h2>
+
+                        <button id="refreshProjectsBtn" class="btn btn-outline-secondary" type="button">
+                            Оновити
+                        </button>
+                    </div>
+
+                    <div id="projectsList" class="row g-4 mt-2">
+                        <p class="text-muted">Завантаження...</p>
+                    </div>
+                </div>
+
+
+                <!-- ДЕТАЛІ ПРОЄКТУ -->
+                <div id="projectDetails" class="card p-4 d-none">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+
+                        <div>
+                            <h2 class="section-title mb-2" id="selectedProjectTitle">
+                                Назва проєкту
+                            </h2>
+
+                            <p class="text-muted mb-1" id="selectedProjectDescription">
+                                Опис проєкту
+                            </p>
+
+                            <p class="mb-0">
+                                <strong>ID проєкту:</strong>
+                                <span id="selectedProjectId">-</span>
+                            </p>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <button id="exportProjectPdfBtn" class="btn btn-outline-danger" type="button">
+                                PDF
+                            </button>
+
+                            <button id="exportProjectDocxBtn" class="btn btn-outline-primary" type="button">
+                                DOCX
+                            </button>
+
+                            <button id="deleteProjectBtn" class="btn btn-outline-danger" type="button">
+                                Видалити
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <!-- ДОДАВАННЯ НОТАТКИ -->
+                    <form id="projectNoteForm" class="mb-4">
+                        <h4>Додати нотатку</h4>
+
+                        <textarea id="projectNoteInput"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Текст нотатки"
+                                  required></textarea>
+
+                        <button type="submit" class="btn btn-main mt-3">
+                            Додати нотатку
+                        </button>
+                    </form>
+
+
+                    <!-- ДОДАВАННЯ РОЗРАХУНКУ ДО ПРОЄКТУ -->
+                    <div class="mb-4">
+                        <h4>Додати розрахунок до проєкту</h4>
+
+                        <div class="row g-3 align-items-end">
+
+                            <div class="col-md-9">
+                                <label for="calculationToProjectSelect" class="form-label">
+                                    Оберіть розрахунок з історії
+                                </label>
+                                <select id="calculationToProjectSelect" class="form-select">
+                                    <option value="">Немає доступних розрахунків</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <button id="addCalculationToProjectBtn" class="btn btn-main w-100" type="button">
+                                    Додати
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <!-- ЕЛЕМЕНТИ ПРОЄКТУ -->
+                    <h4>Вміст проєкту</h4>
+
+                    <div id="projectItemsList" class="project-items-list">
+                        <p class="text-muted">Оберіть проєкт для перегляду елементів.</p>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= ФУТЕР ================= -->
+    <footer class="footer">
+        © 2026 КАЛЬКУЛЯТОР ТЕПЛОЕНЕРГЕТИК
+    </footer>
+
+    
+    <div id="siteModal" class="site-modal d-none">
+        <div class="site-modal-backdrop"></div>
+
+        <div class="site-modal-dialog">
+            <button type="button" class="site-modal-close" id="siteModalCloseBtn">
+                &times;
+            </button>
+
+            <h3 class="site-modal-title" id="siteModalTitle">Повідомлення</h3>
+
+            <div class="site-modal-body" id="siteModalBody">
+                Текст повідомлення
+            </div>
+
+            <div class="site-modal-actions" id="siteModalActions">
+                <button type="button" class="btn btn-outline-secondary" id="siteModalCancelBtn">
+                    Скасувати
+                </button>
+
+                <button type="button" class="btn btn-main" id="siteModalOkBtn">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- DOCX -->
+    <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+
+    <!-- Project scripts -->
+    <script src="js/supabase-client.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/office.js"></script>
+</body>
+</html>
