@@ -278,6 +278,11 @@ textarea.form-control {
     max-height: 420px;
 }
 
+.chart-empty-message {
+    padding: 16px 20px;
+    border-radius: 8px;
+}
+
 /* ================= МІЙ КАБІНЕТ ================= */
 
 .nav-tabs .nav-link {
