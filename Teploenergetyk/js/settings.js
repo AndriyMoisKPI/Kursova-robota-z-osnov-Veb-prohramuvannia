@@ -545,7 +545,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         passwordForm.addEventListener("submit", updatePassword);
     }
 
-    if (avatarGrid && showAllAvatarsBtn) {
+    if (avatarGrid && showAllAvatarsBtn && avatarButtons.length > 6) {
         avatarGrid.classList.add("avatar-collapsed");
 
         showAllAvatarsBtn.addEventListener("click", () => {
