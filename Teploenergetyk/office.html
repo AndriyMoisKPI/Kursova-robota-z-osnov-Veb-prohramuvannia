@@ -83,7 +83,7 @@
             <div class="row align-items-center">
 
                 <div class="col-md-8">
-                    <h2 class="section-title">Поточний користувач</h2>
+                    <h2 class="section-title">Кабінет користувача</h2>
 
                     <p class="mb-1">
                         <strong>Email:</strong>
@@ -246,14 +246,17 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label for="projectTheme" class="form-label">
-                                    Тема проєкту
-                                </label>
-                                <select id="projectTheme" class="form-select">
-                                    <option value="green">Зелена</option>
-                                    <option value="blue">Синя</option>
-                                    <option value="red">Червона</option>
-                                    <option value="gray">Сіра</option>
+                                <label for="projectTheme" class="form-label">Тематика проєкту</label>
+                                <select class="form-select" id="projectTheme" required>
+                                    <option value="Теплова енергія">Теплова енергія</option>
+                                    <option value="Теплообмін">Теплообмін</option>
+                                    <option value="Теплопровідність">Теплопровідність</option>
+                                    <option value="Конвекція та випромінювання">Конвекція та випромінювання</option>
+                                    <option value="Вода і пара">Вода і пара</option>
+                                    <option value="Паливо">Паливо</option>
+                                    <option value="Газові процеси">Газові процеси</option>
+                                    <option value="Теплові машини">Теплові машини</option>
+                                    <option value="Інше">Інше</option>
                                 </select>
                             </div>
 
@@ -320,8 +323,12 @@
                                 Опис проєкту
                             </p>
 
-                            <p class="mb-0">
-                                <strong>ID проєкту:</strong>
+                            <p class="mb-2">
+                                <strong>Тематика:</strong>
+                                <span id="selectedProjectTheme">-</span>
+                            </p>
+                            <p class="d-none">
+                                <strong>ID:</strong>
                                 <span id="selectedProjectId">-</span>
                             </p>
                         </div>
@@ -370,6 +377,12 @@
                                 <label for="calculationToProjectSelect" class="form-label">
                                     Оберіть розрахунок з історії
                                 </label>
+                                <div id="projectCalculationHint" class="project-hint mb-3">
+                                    <strong>Підказка:</strong>
+                                    щоб додати розрахунок до проєкту, спочатку виконайте його на сторінці
+                                    <a href="calculators.html">Калькулятори</a>.
+                                    Після збереження розрахунок з’явиться у списку нижче.
+                                </div>
                                 <select id="calculationToProjectSelect" class="form-select">
                                     <option value="">Немає доступних розрахунків</option>
                                 </select>
@@ -406,7 +419,7 @@
         © 2026 КАЛЬКУЛЯТОР ТЕПЛОЕНЕРГЕТИК
     </footer>
 
-    
+
     <div id="siteModal" class="site-modal d-none">
         <div class="site-modal-backdrop"></div>
 
@@ -440,10 +453,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
     <!-- DOCX -->
-    <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 
     <!-- Project scripts -->
     <script src="js/supabase-client.js"></script>
