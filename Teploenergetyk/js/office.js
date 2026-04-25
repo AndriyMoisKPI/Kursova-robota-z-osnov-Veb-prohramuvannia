@@ -332,7 +332,7 @@ async function deleteCalculation(calculationId) {
         "Підтвердження видалення",
         "Видалити"
     );
-
+}
 
 async function deleteAllHistory() {
     const confirmDelete = confirm("Ви справді хочете видалити всю історію розрахунків?");
