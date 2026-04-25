@@ -2,3 +2,5 @@
 
 [Переглянути сайт](https://andriymoiskpi.github.io/Kursova-robota-z-osnov-Veb-prohramuvannia/Teploenergetyk/)
 
+[Переглянути файли](./Teploenergetyk/)
+
