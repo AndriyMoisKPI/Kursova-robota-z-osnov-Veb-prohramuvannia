@@ -468,6 +468,19 @@ textarea.form-control {
     .avatar-grid.avatar-collapsed .avatar-option:nth-child(n + 7) {
         display: none;
     }
+
+    .avatar-toggle-btn,
+    #showAllAvatarsBtn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@media (min-width: 768px) {
+    #showAllAvatarsBtn {
+        display: none !important;
+    }
 }
 
 /* ================= СТОРІНКИ ВХОДУ ТА РЕЄСТРАЦІЇ ================= */
@@ -574,9 +587,7 @@ textarea.form-control {
     }
 }
 
-/* =========================================================
-   FOOTER FIX
-========================================================= */
+/* ================= ФУТЕР ================= */
 
 .footer {
     width: 100%;
@@ -592,9 +603,7 @@ textarea.form-control {
     line-height: 1.4;
 }
 
-/* =========================================================
-   AUTH SWITCH BUTTON FIX
-========================================================= */
+/* ================= КНОПКА НА СТОРІНЦІ АВТОРИЗАЦІЇ ================= */
 
 .auth-switch .btn {
     display: flex;
