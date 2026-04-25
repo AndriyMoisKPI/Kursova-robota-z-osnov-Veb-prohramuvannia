@@ -237,112 +237,115 @@
                             <img src="assets/avatars/Avatar-Pirogovska.png" alt="Студентка">
                         </button>
 
-                        <button type="button" class="btn btn-outline-main w-100 mt-3 d-md-none" id="showAllAvatarsBtn">
-                            Показати всі аватарки
-                        </button>
-
                     </div>
+
+                    <button type="button" class="btn btn-main w-100 mt-3 d-md-none" id="showAllAvatarsBtn">
+                        Показати всі аватарки
+                    </button>
+
                 </div>
             </div>
 
             <!-- ================= ЗМІНА ПАРОЛЮ ================= -->
-            <div class="card p-4 mt-4">
-                <h2 class="section-title">Зміна паролю</h2>
-
-                <form id="passwordForm" autocomplete="off">
-
-                    <div class="mb-3">
-                        <label for="oldPasswordInput" class="form-label">Старий пароль</label>
-                        <input type="password"
-                               class="form-control"
-                               id="oldPasswordInput"
-                               autocomplete="current-password"
-                               placeholder="Введіть старий пароль"
-                               minlength="6"
-                               required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="newPasswordInput" class="form-label">Новий пароль</label>
-                        <input type="password"
-                               class="form-control"
-                               id="newPasswordInput"
-                               autocomplete="new-password"
-                               placeholder="Введіть новий пароль"
-                               minlength="6"
-                               required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="repeatPasswordInput" class="form-label">Повторіть новий пароль</label>
-                        <input type="password"
-                               class="form-control"
-                               id="repeatPasswordInput"\
-                               autocomplete="new-password"
-                               placeholder="Повторіть новий пароль"
-                               minlength="6"
-                               required>
-                    </div>
-
-                    <button type="submit" class="btn btn-main">
-                        Змінити пароль
-                    </button>
-                </form>
-            </div>
-
-            <!-- ================= ПЕРСОНАЛІЗАЦІЯ ================= -->
             <div class="col-lg-12">
-                <div class="card p-4">
-                    <h2 class="section-title">Персоналізація інтерфейсу</h2>
+                <div class="card p-4 mt-4">
+                    <h2 class="section-title">Зміна паролю</h2>
 
-                    <form id="appearanceForm">
-                        <div class="row g-3">
+                    <form id="passwordForm" autocomplete="off">
 
-                            <div class="col-md-4">
-                                <label for="themeSelect" class="form-label">
-                                    Тема
-                                </label>
-                                <select id="themeSelect" class="form-select">
-                                    <option value="light">Світла</option>
-                                    <option value="dark">Темна</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="colorSchemeSelect" class="form-label">
-                                    Кольорова гама
-                                </label>
-                                <select id="colorSchemeSelect" class="form-select">
-                                    <option value="green">Зелена</option>
-                                    <option value="blue">Синя</option>
-                                    <option value="red">Червона</option>
-                                    <option value="gray">Сіра</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="fontSizeSelect" class="form-label">
-                                    Розмір шрифту
-                                </label>
-                                <select id="fontSizeSelect" class="form-select">
-                                    <option value="small">Малий</option>
-                                    <option value="normal">Звичайний</option>
-                                    <option value="large">Великий</option>
-                                </select>
-                            </div>
-
+                        <div class="mb-3">
+                            <label for="oldPasswordInput" class="form-label">Старий пароль</label>
+                            <input type="password"
+                                   class="form-control"
+                                   id="oldPasswordInput"
+                                   autocomplete="current-password"
+                                   placeholder="Введіть старий пароль"
+                                   minlength="6"
+                                   required>
                         </div>
 
-                        <button type="submit" class="btn btn-main mt-4">
-                            Зберегти налаштування
+                        <div class="mb-3">
+                            <label for="newPasswordInput" class="form-label">Новий пароль</label>
+                            <input type="password"
+                                   class="form-control"
+                                   id="newPasswordInput"
+                                   autocomplete="new-password"
+                                   placeholder="Введіть новий пароль"
+                                   minlength="6"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="repeatPasswordInput" class="form-label">Повторіть новий пароль</label>
+                            <input type="password"
+                                   class="form-control"
+                                   id="repeatPasswordInput"
+                                   autocomplete="new-password"
+                                   placeholder="Повторіть новий пароль"
+                                   minlength="6"
+                                   required>
+                        </div>
+
+                        <button type="submit" class="btn btn-main">
+                            Змінити пароль
                         </button>
                     </form>
                 </div>
             </div>
 
-        </div>
+                <!-- ================= ПЕРСОНАЛІЗАЦІЯ ================= -->
+                <div class="col-lg-12">
+                    <div class="card p-4">
+                        <h2 class="section-title">Персоналізація інтерфейсу</h2>
 
-    </main>
+                        <form id="appearanceForm">
+                            <div class="row g-3">
+
+                                <div class="col-md-4">
+                                    <label for="themeSelect" class="form-label">
+                                        Тема
+                                    </label>
+                                    <select id="themeSelect" class="form-select">
+                                        <option value="light">Світла</option>
+                                        <option value="dark">Темна</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="colorSchemeSelect" class="form-label">
+                                        Кольорова гама
+                                    </label>
+                                    <select id="colorSchemeSelect" class="form-select">
+                                        <option value="green">Зелена</option>
+                                        <option value="blue">Синя</option>
+                                        <option value="red">Червона</option>
+                                        <option value="gray">Сіра</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="fontSizeSelect" class="form-label">
+                                        Розмір шрифту
+                                    </label>
+                                    <select id="fontSizeSelect" class="form-select">
+                                        <option value="small">Малий</option>
+                                        <option value="normal">Звичайний</option>
+                                        <option value="large">Великий</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <button type="submit" class="btn btn-main mt-4">
+                                Зберегти налаштування
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+</main>
 
 
     <!-- ================= ФУТЕР ================= -->
