@@ -308,6 +308,24 @@ select {
     background-color: var(--soft-accent-bg);
 }
 
+/* ================= ПОВІДОМЛЕННЯ ПРО НЕПОБУДОВУ ГРАФІКА ================= */
+
+#chartEmpty,
+.chart-empty,
+.chart-empty-message {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+html[data-theme="dark"] #chartEmpty,
+html[data-theme="dark"] .chart-empty,
+html[data-theme="dark"] .chart-empty-message {
+    background-color: #101c18;
+    color: #e8eeee;
+    border-color: #34413e;
+}
+
 /* ================= ТАБЛИЦІ ================= */
 
 .table,
@@ -408,7 +426,7 @@ select {
     border-color: var(--main-color);
 }
 
-/* ================= AUTH PAGES ================= */
+/* ================= СТОРІНКИ АВТОРИЗАЦІЇ ================= */
 
 .auth-page {
     background: linear-gradient(rgba(244, 246, 247, 0.92), rgba(244, 246, 247, 0.92)), url("../assets/images/hero-banner.png") center/cover no-repeat;
