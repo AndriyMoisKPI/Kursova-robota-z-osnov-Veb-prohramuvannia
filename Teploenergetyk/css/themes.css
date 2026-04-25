@@ -219,6 +219,41 @@ body {
     color: #ffffff;
 }
 
+.project-card-theme {
+    background-color: var(--soft-accent-bg);
+    color: var(--main-color);
+    border: 1px solid var(--border-color);
+}
+
+html[data-theme="dark"] .project-card-theme {
+    color: var(--main-light);
+}
+
+.project-hint {
+    background-color: var(--soft-accent-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+    .project-hint strong {
+        color: var(--main-color);
+    }
+
+    .project-hint a {
+        color: var(--main-color);
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+        .project-hint a:hover {
+            text-decoration: underline;
+        }
+
+html[data-theme="dark"] .project-hint strong,
+html[data-theme="dark"] .project-hint a {
+    color: var(--main-light);
+}
+
 /* ================= КНОПКИ ================= */
 
 .btn-main {
@@ -325,6 +360,7 @@ html[data-theme="dark"] .chart-empty-message {
     color: #e8eeee;
     border-color: #34413e;
 }
+
 
 /* ================= ТАБЛИЦІ ================= */
 
@@ -455,7 +491,7 @@ html[data-theme="dark"] .chart-empty-message {
     border-top-color: var(--border-color);
 }
 
-/* ================= SITE MODAL ================= */
+/* ================= СТИЛЬ МОДАЛЬНИХ ВІКОН ================= */
 
 .site-modal-dialog {
     background-color: var(--card-bg);
