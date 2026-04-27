@@ -60,7 +60,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="settings.html">Налаштування</a>
+                        <a class="nav-link" href="settings.html">Профіль</a>
                     </li>
 
                     <li class="nav-item">
@@ -75,6 +75,20 @@
 
     <!-- ================= ОСНОВНИЙ КОНТЕНТ ================= -->
     <main class="container main-content">
+
+        <!-- ================= ПОШУУК ================= -->
+        <section class="mb-4">
+            <div class="card p-3">
+                <label for="directorySearch" class="form-label fw-bold">
+                    Пошук у довіднику
+                </label>
+
+                <input type="text"
+                       id="directorySearch"
+                       class="form-control"
+                       placeholder="Введіть назву формули, розділу або ключове слово">
+            </div>
+        </section>
 
         <!-- ================= ШВИДКА НАВІГАЦІЯ ================= -->
         <section class="mb-5">
@@ -1140,5 +1154,49 @@
 
     <script src="js/supabase-client.js"></script>
     <script src="js/app.js"></script>
+
+    <script>
+        const directorySearch = document.getElementById("directorySearch");
+        const directorySearchInfo = document.getElementById("directorySearchInfo");
+
+        function filterDirectory() {
+            if (!directorySearch) return;
+
+            const query = directorySearch.value.trim().toLowerCase();
+
+            const searchableSections = document.querySelectorAll("main section[id]");
+
+            let visibleCount = 0;
+
+            searchableSections.forEach(section => {
+                const text = section.textContent.toLowerCase();
+
+                if (!query || text.includes(query)) {
+                    section.classList.remove("d-none");
+                    visibleCount++;
+                } else {
+                    section.classList.add("d-none");
+                }
+            });
+
+            if (directorySearchInfo) {
+                if (!query) {
+                    directorySearchInfo.textContent =
+                        "Пошук виконується за назвами розділів, формулами, поясненнями та таблицями.";
+                } else if (visibleCount > 0) {
+                    directorySearchInfo.textContent =
+                        `Знайдено розділів: ${visibleCount}`;
+                } else {
+                    directorySearchInfo.textContent =
+                        "Нічого не знайдено. Спробуйте інший запит.";
+                }
+            }
+        }
+
+        if (directorySearch) {
+            directorySearch.addEventListener("input", filterDirectory);
+        }
+    </script>
+
 </body>
 </html>

@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Налаштування — Теплоенергетик</title>
+    <title>Мій профіль — Теплоенергетик</title>
 
     <script>
         (function () {
             const theme = localStorage.getItem("theme") || "light";
             const color = localStorage.getItem("color_scheme") || "green";
             const fontSize = localStorage.getItem("font_size") || "normal";
+            const DEFAULT_AVATAR = "assets/avatars/Avatar-engineer.png";
 
             document.documentElement.setAttribute("data-theme", theme);
             document.documentElement.setAttribute("data-color", color);
@@ -60,7 +61,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link active" href="settings.html">Налаштування</a>
+                        <a class="nav-link active" href="settings.html">Профіль</a>
                     </li>
 
                     <li class="nav-item">
@@ -86,7 +87,7 @@
 
                     <div class="text-center mb-4">
                         <img id="currentAvatar"
-                             src="assets/avatars/avatar-engineer.png"
+                             src="assets/avatars/Avatar-engineer.png"
                              alt=""
                              class="settings-avatar">
 

@@ -60,7 +60,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="settings.html">Налаштування</a>
+                        <a class="nav-link" href="settings.html">Профіль</a>
                     </li>
 
                     <li class="nav-item">
@@ -242,6 +242,8 @@
                                        id="projectTitle"
                                        class="form-control"
                                        placeholder="Наприклад: Розрахунок котельні"
+                                       minlength="3"
+                                       maxlength="80"
                                        required>
                             </div>
 
@@ -258,6 +260,19 @@
                                     <option value="Теплові машини">Теплові машини</option>
                                     <option value="Інше">Інше</option>
                                 </select>
+                            </div>
+
+                            <div class="mt-3 d-none" id="customProjectThemeWrapper">
+                                <label for="customProjectTheme" class="form-label">
+                                    Власна тематика
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       id="customProjectTheme"
+                                       minlength="3"
+                                       maxlength="60"
+                                       placeholder="Введіть власну тематику проєкту">
                             </div>
 
                             <div class="col-md-4">
