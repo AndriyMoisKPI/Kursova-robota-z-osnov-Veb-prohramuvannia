@@ -11,6 +11,8 @@
 
 const settingsMessage = document.getElementById("settingsMessage");
 
+const DEFAULT_AVATAR = "assets/avatars/Avatar-engineer.png";
+
 const profileForm = document.getElementById("profileForm");
 const appearanceForm = document.getElementById("appearanceForm");
 
@@ -148,8 +150,10 @@ function fillSettingsForm(profile) {
     }
 
     if (currentAvatar) {
-        currentAvatar.src = profile.avatar_url || "assets/avatars/avatar-engineer.png";
+        currentAvatar.src = profile.avatar_url || DEFAULT_AVATAR;
     }
+
+    
 
     if (themeSelect) {
         themeSelect.value = profile.theme || "light";
@@ -163,7 +167,8 @@ function fillSettingsForm(profile) {
         fontSizeSelect.value = profile.font_size || "normal";
     }
 
-    markActiveAvatar(profile.avatar_url);
+    markActiveAvatar(profile.avatar_url || DEFAULT_AVATAR);
+
 }
 
 
@@ -227,7 +232,7 @@ async function updateProfile(event) {
             .single();
 
         if (error) {
-            showSettingsMessage(`Помилка оновлення профілю: ${error.message}`, "danger");
+            showSettingsMessage(`Помилка оновлення профілю: ${translateSupabaseError(error.message)}`, "danger");
             return;
         }
 
@@ -261,7 +266,7 @@ async function updateAvatar(avatarUrl) {
         .single();
 
     if (error) {
-        showSettingsMessage(`Помилка оновлення аватара: ${error.message}`, "danger");
+        showSettingsMessage(`Помилка оновлення аватара: ${translateSupabaseError(error.message)}`, "danger");
         return;
     }
 
@@ -303,7 +308,7 @@ async function updateAppearance(event) {
         .single();
 
     if (error) {
-        showSettingsMessage(`Помилка збереження налаштувань: ${error.message}`, "danger");
+        showSettingsMessage(`Помилка збереження налаштувань: ${translateSupabaseError(error.message)}`, "danger");
         return;
     }
 
@@ -350,67 +355,70 @@ async function deleteAccountData() {
 
     if (!currentUser) return;
 
-    const confirmDelete = confirm(
-        "Ви справді хочете видалити профіль? Будуть видалені ваші проєкти, історія розрахунків і налаштування."
+    showSiteConfirm(
+        "Ви справді хочете видалити профіль? Будуть видалені ваші проєкти, історія розрахунків і налаштування.",
+        async () => {
+            try {
+                const { error: projectItemsError } = await supabase
+                    .from("project_items")
+                    .delete()
+                    .in(
+                        "project_id",
+                        await getUserProjectIds(currentUser.id)
+                    );
+
+                if (projectItemsError) {
+                    console.error(projectItemsError.message);
+                }
+
+                const deletedUsername = `deleted_user_${Date.now()}`;
+
+                const { error: profileDeleteError } = await supabase
+                    .from("profiles")
+                    .update({
+                        is_deleted: true,
+                        username: deletedUsername,
+                        avatar_url: null,
+                        role: "user"
+                    })
+                    .eq("id", currentUser.id);
+
+                if (profileDeleteError) {
+                    showSettingsMessage(
+                        `Помилка видалення профілю: ${translateSupabaseError(profileDeleteError.message)}`,
+                        "danger"
+                    );
+                    return;
+                }
+
+                const { error: calculationsError } = await supabase
+                    .from("calculations")
+                    .delete()
+                    .eq("user_id", currentUser.id);
+
+                if (calculationsError) {
+                    console.error(calculationsError.message);
+                }
+
+
+                await supabase.auth.signOut();
+
+                showSiteAlert(
+                    "Профіль і дані користувача видалено.",
+                    "Профіль видалено",
+                    () => {
+                        window.location.href = "index.html";
+                    }
+                );
+
+            } catch (error) {
+                console.error(error);
+                showSettingsMessage("Не вдалося видалити профіль.", "danger");
+            }
+        },
+        "Підтвердження видалення",
+        "Видалити"
     );
-
-    if (!confirmDelete) return;
-
-    try {
-        /*
-           Через cascade частина даних видалиться автоматично,
-           але для наочності курсової видаляємо явно.
-        */
-
-        const { error: projectItemsError } = await supabase
-            .from("project_items")
-            .delete()
-            .in(
-                "project_id",
-                await getUserProjectIds(currentUser.id)
-            );
-
-        if (projectItemsError) {
-            console.error(projectItemsError.message);
-        }
-
-        const { error: projectsError } = await supabase
-            .from("projects")
-            .delete()
-            .eq("user_id", currentUser.id);
-
-        if (projectsError) {
-            console.error(projectsError.message);
-        }
-
-        const { error: calculationsError } = await supabase
-            .from("calculations")
-            .delete()
-            .eq("user_id", currentUser.id);
-
-        if (calculationsError) {
-            console.error(calculationsError.message);
-        }
-
-        const { error: profileError } = await supabase
-            .from("profiles")
-            .delete()
-            .eq("id", currentUser.id);
-
-        if (profileError) {
-            showSettingsMessage(`Помилка видалення профілю: ${profileError.message}`, "danger");
-            return;
-        }
-
-        await supabase.auth.signOut();
-
-        alert("Профіль і дані користувача видалено.");
-        window.location.href = "index.html";
-
-    } catch (error) {
-        console.error(error);
-        showSettingsMessage("Не вдалося видалити профіль.", "danger");
-    }
 }
 
 

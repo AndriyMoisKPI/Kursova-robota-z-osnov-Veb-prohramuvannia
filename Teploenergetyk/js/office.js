@@ -53,6 +53,9 @@ const addCalculationToProjectBtn = document.getElementById("addCalculationToProj
 const projectItemsList = document.getElementById("projectItemsList");
 const projectCalculationHint = document.getElementById("projectCalculationHint");
 
+const customProjectThemeWrapper = document.getElementById("customProjectThemeWrapper");
+const customProjectTheme = document.getElementById("customProjectTheme");
+
 
 /* =========================================================
    ГЛОБАЛЬНИЙ СТАН
@@ -361,7 +364,7 @@ async function deleteCalculation(calculationId) {
                 .eq("user_id", currentUser.id);
 
             if (error) {
-                showOfficeMessage(`Помилка видалення: ${error.message}`, "danger");
+                showOfficeMessage(`Помилка видалення: ${translateSupabaseError(error.message)}`, "danger");
                 return;
             }
 
@@ -379,27 +382,33 @@ async function deleteCalculation(calculationId) {
 }
 
 async function deleteAllHistory() {
-    const confirmDelete = confirm("Ви справді хочете видалити всю історію розрахунків?");
+    showSiteConfirm(
+        "Ви справді хочете видалити всю історію розрахунків?",
+        async () => {
+            const { error } = await supabase
+                .from("calculations")
+                .delete()
+                .eq("user_id", currentUser.id);
 
-    if (!confirmDelete) return;
+            if (error) {
+                showOfficeMessage(
+                    `Помилка видалення історії: ${translateSupabaseError(error.message)}`,
+                    "danger"
+                );
+                return;
+            }
 
-    const { error } = await supabase
-        .from("calculations")
-        .delete()
-        .eq("user_id", currentUser.id);
+            showOfficeMessage("Усю історію розрахунків видалено.", "success");
 
-    if (error) {
-        showOfficeMessage(`Помилка видалення історії: ${error.message}`, "danger");
-        return;
-    }
+            await loadCalculations();
 
-    showOfficeMessage("Усю історію розрахунків видалено.", "success");
-
-    await loadCalculations();
-
-    if (selectedProject) {
-        await loadProjectItems(selectedProject.id);
-    }
+            if (selectedProject) {
+                await loadProjectItems(selectedProject.id);
+            }
+        },
+        "Підтвердження видалення",
+        "Видалити"
+    );
 }
 
 
@@ -458,11 +467,27 @@ async function createProject(event) {
 
     const title = projectTitle.value.trim();
     const description = projectDescription.value.trim();
-    const theme = projectTheme.value;
+    let theme = projectTheme.value;
+
+    if (theme === "Інше") {
+        const customTheme = customProjectTheme?.value.trim();
+
+        if (!customTheme || customTheme.length < 3) {
+            showOfficeMessage("Введіть власну тематику проєкту мінімум із 3 символів.", "danger");
+            return;
+        }
+
+        theme = customTheme;
+    }
+
     const iconUrl = projectIcon.value;
 
     if (!title) {
         showOfficeMessage("Введіть назву проєкту.", "danger");
+        return;
+    }
+    if (title.length < 3) {
+        showOfficeMessage("Назва проєкту має містити мінімум 3 символи.", "danger");
         return;
     }
 
@@ -477,7 +502,7 @@ async function createProject(event) {
         });
 
     if (error) {
-        showOfficeMessage(`Помилка створення проєкту: ${error.message}`, "danger");
+        showOfficeMessage(`Помилка створення проєкту: ${translateSupabaseError(error.message)}`, "danger");
         return;
     }
 
@@ -586,29 +611,37 @@ async function deleteSelectedProject() {
         return;
     }
 
-    const confirmDelete = confirm(`Видалити проєкт "${selectedProject.title}"?`);
+    showSiteConfirm(
+        `Видалити проєкт "${selectedProject.title}"?`,
+        async () => {
+            const { error } = await supabase
+                .from("projects")
+                .delete()
+                .eq("id", selectedProject.id)
+                .eq("user_id", currentUser.id);
 
-    if (!confirmDelete) return;
+            if (error) {
+                showOfficeMessage(
+                    `Помилка видалення проєкту: ${translateSupabaseError(error.message)}`,
+                    "danger"
+                );
+                return;
+            }
 
-    const { error } = await supabase
-        .from("projects")
-        .delete()
-        .eq("id", selectedProject.id)
-        .eq("user_id", currentUser.id);
+            selectedProject = null;
+            selectedProjectItems = [];
 
-    if (error) {
-        showOfficeMessage(`Помилка видалення проєкту: ${error.message}`, "danger");
-        return;
-    }
+            if (projectDetails) {
+                projectDetails.classList.add("d-none");
+            }
 
-    selectedProject = null;
-    selectedProjectItems = [];
+            showOfficeMessage("Проєкт видалено.", "success");
 
-    projectDetails.classList.add("d-none");
-
-    showOfficeMessage("Проєкт видалено.", "success");
-
-    await loadProjects();
+            await loadProjects();
+        },
+        "Підтвердження видалення",
+        "Видалити"
+    );
 }
 
 
@@ -788,7 +821,7 @@ async function addNoteToProject(event) {
         });
 
     if (error) {
-        showOfficeMessage(`Помилка додавання нотатки: ${error.message}`, "danger");
+        showOfficeMessage(`Помилка додавання нотатки: ${translateSupabaseError(error.message)}`, "danger");
         return;
     }
 
@@ -852,7 +885,7 @@ async function addCalculationToProject() {
         });
 
     if (error) {
-        showOfficeMessage(`Помилка додавання розрахунку: ${error.message}`, "danger");
+        showOfficeMessage(`Помилка додавання розрахунку: ${translateSupabaseError(error.message)}`, "danger");
         return;
     }
 
@@ -863,25 +896,31 @@ async function addCalculationToProject() {
 
 
 async function deleteProjectItem(itemId) {
-    const confirmDelete = confirm("Видалити цей елемент з проєкту?");
+    showSiteConfirm(
+        "Видалити цей елемент з проєкту?",
+        async () => {
+            const { error } = await supabase
+                .from("project_items")
+                .delete()
+                .eq("id", itemId);
 
-    if (!confirmDelete) return;
+            if (error) {
+                showOfficeMessage(
+                    `Помилка видалення елемента: ${translateSupabaseError(error.message)}`,
+                    "danger"
+                );
+                return;
+            }
 
-    const { error } = await supabase
-        .from("project_items")
-        .delete()
-        .eq("id", itemId);
+            showOfficeMessage("Елемент проєкту видалено.", "success");
 
-    if (error) {
-        showOfficeMessage(`Помилка видалення елемента: ${error.message}`, "danger");
-        return;
-    }
-
-    showOfficeMessage("Елемент проєкту видалено.", "success");
-
-    if (selectedProject) {
-        await loadProjectItems(selectedProject.id);
-    }
+            if (selectedProject) {
+                await loadProjectItems(selectedProject.id);
+            }
+        },
+        "Підтвердження видалення",
+        "Видалити"
+    );
 }
 
 
@@ -1388,5 +1427,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (exportProjectDocxBtn) {
         exportProjectDocxBtn.addEventListener("click", exportSelectedProjectToDOCX);
+    }
+
+    if (projectTheme && customProjectThemeWrapper) {
+        projectTheme.addEventListener("change", () => {
+            if (projectTheme.value === "Інше") {
+                customProjectThemeWrapper.classList.remove("d-none");
+            } else {
+                customProjectThemeWrapper.classList.add("d-none");
+                if (customProjectTheme) customProjectTheme.value = "";
+            }
+        });
     }
 });

@@ -23,6 +23,9 @@ const currentUserRole = document.getElementById("currentUserRole");
 
 const logoutBtn = document.getElementById("logoutBtn");
 
+const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+
+const DEFAULT_AVATAR = "assets/avatars/Avatar-engineer.png";
 
 /* =========================================================
    ПОВІДОМЛЕННЯ
@@ -125,13 +128,14 @@ async function registerUser(event) {
             password: password,
             options: {
                 data: {
-                    username: username
+                    username: username,
+                    avatar_url: DEFAULT_AVATAR
                 }
             }
         });
 
         if (error) {
-            showMessage(`Помилка реєстрації: ${error.message}`, "danger");
+            showMessage(`Помилка реєстрації: ${translateSupabaseError(error.message)}`, "danger");
             return;
         }
 
@@ -207,8 +211,52 @@ async function loginUser(event) {
         });
 
         if (error) {
-            showMessage(`Помилка входу: ${error.message}`, "danger");
+            showMessage(`Помилка входу: ${translateSupabaseError(error.message)}`, "danger");
             return;
+        }
+
+        const { data: profile, error: profileError } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", data.user.id)
+            .maybeSingle();
+
+        if (profileError) {
+            await supabase.auth.signOut();
+
+            showMessage(
+                `Помилка перевірки профілю: ${translateSupabaseError(profileError.message)}`,
+                "danger"
+            );
+
+            return;
+        }
+
+        if (!profile || profile.is_deleted) {
+            const { error: recreateError } = await supabase
+                .from("profiles")
+                .upsert({
+                    id: data.user.id,
+                    email: data.user.email,
+                    username: `user_${Date.now()}`,
+                    avatar_url: DEFAULT_AVATAR,
+                    role: "user",
+                    theme: "light",
+                    color_scheme: "green",
+                    font_size: "normal",
+                    is_deleted: false
+                });
+
+            if (recreateError) {
+                await supabase.auth.signOut();
+
+                showMessage(
+                    `Не вдалося створити профіль заново: ${translateSupabaseError(recreateError.message)}`,
+                    "danger"
+                );
+
+                return;
+            }
         }
 
         showMessage("Вхід виконано успішно.", "success");
@@ -270,6 +318,18 @@ async function checkAuthState() {
 
     const profile = await loadProfile(user.id);
 
+    if (!profile || profile.is_deleted) {
+        await supabase.auth.signOut();
+
+        localStorage.removeItem("is_logged_in");
+        localStorage.removeItem("user_role");
+
+        if (userPanel) userPanel.classList.add("d-none");
+        if (authForms) authForms.classList.remove("d-none");
+
+        return;
+    }
+
     if (currentUserEmail) {
         currentUserEmail.textContent = user.email || "-";
     }
@@ -293,6 +353,30 @@ async function checkAuthState() {
 
 async function handleLogout() {
     await logoutUser();
+}
+
+/* =========================================================
+   ВІДНОВЛЕННЯ ПАРОЛЮ
+========================================================= */
+
+async function resetPasswordByEmail() {
+    const identifier = document.getElementById("loginIdentifier")?.value.trim();
+
+    if (!identifier || !identifier.includes("@")) {
+        showMessage("Введіть email у поле входу, щоб отримати лист для скидання пароля.", "warning");
+        return;
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(identifier, {
+        redirectTo: window.location.origin + window.location.pathname.replace("login.html", "settings.html")
+    });
+
+    if (error) {
+        showMessage(`Помилка скидання пароля: ${translateSupabaseError(error.message)}`, "danger");
+        return;
+    }
+
+    showMessage("Лист для скидання пароля надіслано на вашу пошту.", "success");
 }
 
 
@@ -322,5 +406,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (logoutBtn) {
         logoutBtn.addEventListener("click", handleLogout);
+    }
+
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener("click", (event) => {
+            event.preventDefault();
+            resetPasswordByEmail();
+        });
     }
 });

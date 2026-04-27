@@ -61,10 +61,14 @@ async function getCurrentProfile() {
         .from("profiles")
         .select("*")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
     if (error) {
         console.error("Помилка отримання профілю:", error.message);
+        return null;
+    }
+
+    if (!data || data.is_deleted) {
         return null;
     }
 
@@ -80,6 +84,18 @@ async function requireAuth() {
     const user = await getCurrentUser();
 
     if (!user) {
+        window.location.href = "login.html";
+        return null;
+    }
+
+    const profile = await getCurrentProfile();
+
+    if (!profile) {
+        await window.supabase.auth.signOut();
+
+        localStorage.removeItem("is_logged_in");
+        localStorage.removeItem("user_role");
+
         window.location.href = "login.html";
         return null;
     }
@@ -147,4 +163,63 @@ async function logoutUser() {
     localStorage.removeItem("user_role");
 
     window.location.href = "login.html";
+}
+
+/* =========================================================
+   ПЕРЕКЛАД ПОМИЛОК
+========================================================= */
+
+
+function translateSupabaseError(message) {
+    if (!message) {
+        return "Сталася невідома помилка.";
+    }
+
+    const text = String(message).toLowerCase();
+
+    if (text.includes("invalid login credentials")) {
+        return "Неправильний email, нікнейм або пароль.";
+    }
+
+    if (text.includes("email not confirmed")) {
+        return "Email ще не підтверджено.";
+    }
+
+    if (text.includes("email logins are disabled")) {
+        return "Вхід через email вимкнено в налаштуваннях Supabase.";
+    }
+
+    if (text.includes("user already registered") || text.includes("already registered")) {
+        return "Користувач із таким email уже зареєстрований.";
+    }
+
+    if (text.includes("password should be at least")) {
+        return "Пароль занадто короткий.";
+    }
+
+    if (text.includes("rate limit")) {
+        return "Забагато спроб. Спробуйте трохи пізніше.";
+    }
+
+    if (text.includes("invalid email")) {
+        return "Некоректна email-адреса.";
+    }
+
+    if (text.includes("jwt expired")) {
+        return "Сесія завершилася. Увійдіть знову.";
+    }
+
+    if (text.includes("permission denied") || text.includes("row-level security")) {
+        return "Недостатньо прав для виконання цієї дії.";
+    }
+
+    if (text.includes("violates foreign key constraint")) {
+        return "Неможливо виконати дію через пов’язані дані.";
+    }
+
+    if (text.includes("violates check constraint")) {
+        return "Введене значення не відповідає допустимим параметрам.";
+    }
+
+    return message;
 }

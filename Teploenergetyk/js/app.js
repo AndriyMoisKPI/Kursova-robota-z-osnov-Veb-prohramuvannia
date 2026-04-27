@@ -315,15 +315,21 @@ async function protectPage() {
         return null;
     }
 
-    return user;
-}
+    if (typeof getCurrentProfile === "function") {
+        const profile = await getCurrentProfile();
 
-function closeSiteModal() {
-    if (!siteModal) return;
-    siteModal.classList.add("d-none");
-    siteModalOkBtn.onclick = null;
-    siteModalCancelBtn.onclick = null;
-    siteModalCloseBtn.onclick = null;
+        if (!profile) {
+            await supabase.auth.signOut();
+
+            localStorage.removeItem("is_logged_in");
+            localStorage.removeItem("user_role");
+
+            window.location.href = "login.html";
+            return null;
+        }
+    }
+
+    return user;
 }
 
 function getSiteModalElements() {

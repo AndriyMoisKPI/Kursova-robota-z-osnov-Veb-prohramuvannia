@@ -103,7 +103,42 @@ function getProfileNameById(userId) {
 
     return profile.username || profile.email || "Користувач";
 }
+function formatAdminInputData(inputData) {
+    if (!inputData || typeof inputData !== "object") {
+        return "Вхідні дані відсутні";
+    }
 
+    const labels = {
+        c: "Питома теплоємність c",
+        m: "Маса m",
+        dt: "Зміна температури Δt",
+        lambda: "Питома теплота плавлення λ",
+        r: "Питома теплота пароутворення r",
+        q: "Кількість теплоти Q",
+        q1: "Q1",
+        q2: "Q2",
+        q3: "Q3",
+        tau: "Час τ",
+        k: "Коефіцієнт теплопередачі k",
+        f: "Площа поверхні F",
+        delta: "Різниця температур",
+        alpha: "Коефіцієнт тепловіддачі α",
+        a: "Коефіцієнт температуропровідності a",
+        l: "Довжина l",
+        t1: "Температура t1",
+        t2: "Температура t2",
+        v: "Об’єм V",
+        p: "Тиск p",
+        T: "Температура T"
+    };
+
+    return Object.entries(inputData)
+        .map(([key, value]) => {
+            const label = labels[key] || key;
+            return `${label}: ${value}`;
+        })
+        .join("\n");
+}
 
 /* =========================================================
    ІНІЦІАЛІЗАЦІЯ АДМІН-ПАНЕЛІ
@@ -315,7 +350,10 @@ async function setUserRole(userId, role) {
         .eq("id", userId);
 
     if (error) {
-        showAdminMessage(`Помилка зміни ролі: ${error.message}`, "danger");
+        showAdminMessage(
+            `Помилка зміни ролі: ${translateSupabaseError(error.message)}`,
+            "danger"
+        );
         return;
     }
 
@@ -338,71 +376,75 @@ async function deleteUserData(userId) {
     const profile = allUsers.find(user => user.id === userId);
     const username = profile?.username || profile?.email || userId;
 
-    const confirmDelete = confirm(
+    showSiteConfirm(
         `Видалити дані користувача "${username}"?\n\n` +
-        `Буде видалено профіль, історію розрахунків, проєкти та елементи проєктів.`
-    );
+        `Буде видалено профіль, історію розрахунків, проєкти та елементи проєктів.`,
+        async () => {
+            try {
+                const userProjects = allProjects
+                    .filter(project => project.user_id === userId)
+                    .map(project => project.id);
 
-    if (!confirmDelete) return;
+                if (userProjects.length > 0) {
+                    const { error: projectItemsError } = await supabase
+                        .from("project_items")
+                        .delete()
+                        .in("project_id", userProjects);
 
-    try {
-        const userProjects = allProjects
-            .filter(project => project.user_id === userId)
-            .map(project => project.id);
+                    if (projectItemsError) {
+                        throw projectItemsError;
+                    }
+                }
 
-        if (userProjects.length > 0) {
-            const { error: projectItemsError } = await supabase
-                .from("project_items")
-                .delete()
-                .in("project_id", userProjects);
+                const { error: projectsError } = await supabase
+                    .from("projects")
+                    .delete()
+                    .eq("user_id", userId);
 
-            if (projectItemsError) {
-                throw projectItemsError;
+                if (projectsError) {
+                    throw projectsError;
+                }
+
+                const { error: calculationsError } = await supabase
+                    .from("calculations")
+                    .delete()
+                    .eq("user_id", userId);
+
+                if (calculationsError) {
+                    throw calculationsError;
+                }
+
+                const { error: profileError } = await supabase
+                    .from("profiles")
+                    .delete()
+                    .eq("id", userId);
+
+                if (profileError) {
+                    throw profileError;
+                }
+
+                /*
+                   Важливо:
+                   Тут видаляються дані з public-таблиць.
+                   Сам запис у auth.users через frontend видаляти не можна,
+                   бо для цього потрібен service_role ключ.
+                */
+
+                showAdminMessage("Дані користувача видалено.", "success");
+
+                await loadAdminData();
+
+            } catch (error) {
+                console.error(error.message);
+                showAdminMessage(
+                    `Помилка видалення користувача: ${translateSupabaseError(error.message)}`,
+                    "danger"
+                );
             }
-        }
-
-        const { error: projectsError } = await supabase
-            .from("projects")
-            .delete()
-            .eq("user_id", userId);
-
-        if (projectsError) {
-            throw projectsError;
-        }
-
-        const { error: calculationsError } = await supabase
-            .from("calculations")
-            .delete()
-            .eq("user_id", userId);
-
-        if (calculationsError) {
-            throw calculationsError;
-        }
-
-        const { error: profileError } = await supabase
-            .from("profiles")
-            .delete()
-            .eq("id", userId);
-
-        if (profileError) {
-            throw profileError;
-        }
-
-        /*
-           Важливо:
-           Тут видаляються дані з public-таблиць.
-           Сам запис у auth.users через frontend видаляти не можна,
-           бо для цього потрібен service_role ключ.
-        */
-
-        showAdminMessage("Дані користувача видалено.", "success");
-
-        await loadAdminData();
-
-    } catch (error) {
-        console.error(error.message);
-        showAdminMessage(`Помилка видалення користувача: ${error.message}`, "danger");
-    }
+        },
+        "Підтвердження видалення",
+        "Видалити"
+    );
 }
 
 
@@ -511,44 +553,50 @@ function showAdminCalculationDetails(calculationId) {
 
     if (!item) return;
 
-    const inputs = JSON.stringify(item.input_data, null, 2);
+    const inputs = formatAdminInputData(item.input_data);
 
-    alert(
+    const message =
         `Користувач: ${getProfileNameById(item.user_id)}\n` +
         `Розділ: ${item.section}\n` +
         `Формула: ${item.formula_name}\n` +
         `Вираз: ${item.formula || "-"}\n\n` +
         `Вхідні дані:\n${inputs}\n\n` +
-        `Результат: ${item.result} ${item.unit || ""}`
-    );
+        `Результат: ${item.result} ${item.unit || ""}`;
+
+    showSiteAlert(message, "Деталі розрахунку");
 }
 
 
 async function deleteAdminCalculation(calculationId) {
     hideAdminMessage();
 
-    const confirmDelete = confirm("Видалити цей розрахунок?");
+    showSiteConfirm(
+        "Видалити цей розрахунок?",
+        async () => {
+            const { error } = await supabase
+                .from("calculations")
+                .delete()
+                .eq("id", calculationId);
 
-    if (!confirmDelete) return;
+            if (error) {
+                showAdminMessage(
+                    `Помилка видалення розрахунку: ${translateSupabaseError(error.message)}`,
+                    "danger"
+                );
+                return;
+            }
 
-    const { error } = await supabase
-        .from("calculations")
-        .delete()
-        .eq("id", calculationId);
+            showAdminMessage("Розрахунок видалено.", "success");
 
-    if (error) {
-        showAdminMessage(`Помилка видалення розрахунку: ${error.message}`, "danger");
-        return;
-    }
+            await loadAllCalculations();
+            await loadAllProjects();
 
-    showAdminMessage("Розрахунок видалено.", "success");
-
-    await loadAllCalculations();
-    await loadAllProjects();
-
-    updateAdminStats();
-    renderCalculationsTable();
-    renderProjectsTable();
+            updateAdminStats();
+            renderCalculationsTable();
+        },
+        "Підтвердження видалення",
+        "Видалити"
+    );
 }
 
 
@@ -663,7 +711,10 @@ async function showAdminProjectDetails(projectId) {
         .order("created_at", { ascending: false });
 
     if (error) {
-        showAdminMessage(`Помилка завантаження елементів проєкту: ${error.message}`, "danger");
+        showAdminMessage(
+            `Помилка завантаження елементів проєкту: ${translateSupabaseError(error.message)}`,
+            "danger"
+        );
         return;
     }
 
@@ -679,13 +730,14 @@ async function showAdminProjectDetails(projectId) {
         return `${index + 1}. Елемент: ${item.item_type}`;
     }).join("\n");
 
-    alert(
+    const message =
         `Проєкт: ${project.title}\n` +
         `Опис: ${project.description || "Без опису"}\n` +
         `Користувач: ${getProfileNameById(project.user_id)}\n` +
-        `Тема: ${project.theme || "green"}\n\n` +
-        `Елементи:\n${itemsText || "Елементів немає"}`
-    );
+        `Тематика: ${project.theme || "Інше"}\n\n` +
+        `Елементи:\n${itemsText || "Елементів немає"}`;
+
+    showSiteAlert(message, "Деталі проєкту");
 }
 
 
@@ -695,25 +747,31 @@ async function deleteAdminProject(projectId) {
     const project = allProjects.find(item => item.id === projectId);
     const title = project?.title || projectId;
 
-    const confirmDelete = confirm(`Видалити проєкт "${title}"?`);
+    showSiteConfirm(
+        `Видалити проєкт "${title}"?`,
+        async () => {
+            const { error } = await supabase
+                .from("projects")
+                .delete()
+                .eq("id", projectId);
 
-    if (!confirmDelete) return;
+            if (error) {
+                showAdminMessage(
+                    `Помилка видалення проєкту: ${translateSupabaseError(error.message)}`,
+                    "danger"
+                );
+                return;
+            }
 
-    const { error } = await supabase
-        .from("projects")
-        .delete()
-        .eq("id", projectId);
+            showAdminMessage("Проєкт видалено.", "success");
 
-    if (error) {
-        showAdminMessage(`Помилка видалення проєкту: ${error.message}`, "danger");
-        return;
-    }
-
-    showAdminMessage("Проєкт видалено.", "success");
-
-    await loadAllProjects();
-    updateAdminStats();
-    renderProjectsTable();
+            await loadAllProjects();
+            updateAdminStats();
+            renderProjectsTable();
+        },
+        "Підтвердження видалення",
+        "Видалити"
+    );
 }
 
 
