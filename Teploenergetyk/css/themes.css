@@ -491,6 +491,24 @@ html[data-theme="dark"] .chart-empty-message {
     border-top-color: var(--border-color);
 }
 
+/* ================= ВІДНОВЛЕННЯ ПАРОЛЮ ================= */
+
+.auth-helper-link a {
+    color: var(--main-color);
+}
+
+    .auth-helper-link a:hover {
+        color: var(--main-dark);
+    }
+
+html[data-theme="dark"] .auth-helper-link a {
+    color: var(--main-light);
+}
+
+    html[data-theme="dark"] .auth-helper-link a:hover {
+        color: #ffffff;
+    }
+
 /* ================= СТИЛЬ МОДАЛЬНИХ ВІКОН ================= */
 
 .site-modal-dialog {
