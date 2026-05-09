@@ -40,6 +40,7 @@ const selectedProjectDescription = document.getElementById("selectedProjectDescr
 const selectedProjectId = document.getElementById("selectedProjectId");
 const selectedProjectTheme = document.getElementById("selectedProjectTheme");
 
+const exportHistoryXlsxBtn = document.getElementById("exportHistoryXlsxBtn");
 const exportProjectPdfBtn = document.getElementById("exportProjectPdfBtn");
 const exportProjectDocxBtn = document.getElementById("exportProjectDocxBtn");
 const deleteProjectBtn = document.getElementById("deleteProjectBtn");
@@ -413,28 +414,8 @@ async function deleteAllHistory() {
 
 
 /* =========================================================
-   CSV ЕКСПОРТ ІСТОРІЇ
+   CSV ТА XLSX ЕКСПОРТ ІСТОРІЇ
 ========================================================= */
-
-function formatCsvValue(value) {
-    if (value === null || value === undefined) {
-        return "";
-    }
-
-    let text = String(value);
-
-    /*
-       Захист від CSV injection:
-       якщо значення починається з =, +, -, @,
-       Excel може сприйняти його як формулу.
-    */
-    if (/^[=+\-@]/.test(text)) {
-        text = "'" + text;
-    }
-
-    return `"${text.replaceAll('"', '""')}"`;
-}
-
 
 function exportHistoryToCSV() {
     const filtered = getFilteredCalculations();
@@ -444,53 +425,341 @@ function exportHistoryToCSV() {
         return;
     }
 
-    const exportDate = new Date().toLocaleString("uk-UA");
-
     const headers = [
-        "№",
-        "Дата розрахунку",
+        "Дата",
         "Розділ",
-        "Назва формули",
         "Формула",
         "Вхідні дані",
         "Результат",
-        "Одиниця вимірювання"
+        "Одиниця"
     ];
 
-    const rows = filtered.map((item, index) => [
-        index + 1,
+    const rows = filtered.map(item => [
         formatDate(item.created_at),
-        item.section || "-",
-        item.formula_name || "-",
-        item.formula || "-",
+        item.section,
+        item.formula_name,
         formatInputData(item.input_data),
-        item.result || "-",
+        item.result,
         item.unit || ""
     ]);
 
-    const csvLines = [
-        "sep=;",
-        "Теплоенергетик — журнал розрахунків",
-        `Дата експорту: ${exportDate}`,
-        `Кількість записів: ${filtered.length}`,
-        "",
-        headers.map(formatCsvValue).join(";"),
-        ...rows.map(row => row.map(formatCsvValue).join(";"))
-    ];
-
-    const csv = csvLines.join("\n");
-
-    const fileDate = new Date()
-        .toISOString()
-        .slice(0, 10);
+    const csv = [
+        headers.join(";"),
+        ...rows.map(row =>
+            row.map(value =>
+                `"${String(value ?? "").replaceAll('"', '""')}"`
+            ).join(";")
+        )
+    ].join("\n");
 
     downloadTextFile(
-        `history_${fileDate}.csv`,
+        "history.csv",
         "\uFEFF" + csv,
         "text/csv;charset=utf-8;"
     );
 
     showOfficeMessage("CSV файл історії сформовано.", "success");
+}
+
+function formatInputDataRows(inputData) {
+    if (!inputData || typeof inputData !== "object") {
+        return [
+            {
+                parameter: "Вхідні дані",
+                value: "Відсутні"
+            }
+        ];
+    }
+
+    const labels = {
+        c: "Питома теплоємність c",
+        m: "Маса m",
+        dt: "Зміна температури Δt",
+        lambda: "Питома теплота плавлення λ",
+        r: "Питома теплота пароутворення r",
+        q: "Кількість теплоти Q",
+        qTotal: "Загальна кількість теплоти Q",
+        q1: "Кількість теплоти Q1",
+        q2: "Кількість теплоти Q2",
+        q3: "Кількість теплоти Q3",
+        tau: "Час τ",
+        k: "Коефіцієнт теплопередачі k",
+        f: "Площа поверхні F",
+        delta: "Різниця температур Δt",
+        alpha: "Коефіцієнт тепловіддачі α",
+        a: "Коефіцієнт температуропровідності a",
+        l: "Довжина l",
+        t1: "Температура t1",
+        t2: "Температура t2",
+        v: "Об’єм V",
+        p: "Тиск p",
+        T: "Температура T"
+    };
+
+    return Object.entries(inputData).map(([key, value]) => {
+        return {
+            parameter: labels[key] || key,
+            value: value
+        };
+    });
+}
+
+
+function styleHeaderRow(row) {
+    row.eachCell(cell => {
+        cell.font = {
+            bold: true,
+            color: { argb: "FFFFFFFF" }
+        };
+
+        cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FF1F5C4D" }
+        };
+
+        cell.alignment = {
+            vertical: "middle",
+            horizontal: "center",
+            wrapText: true
+        };
+
+        cell.border = {
+            top: { style: "thin", color: { argb: "FFB7C9C1" } },
+            left: { style: "thin", color: { argb: "FFB7C9C1" } },
+            bottom: { style: "thin", color: { argb: "FFB7C9C1" } },
+            right: { style: "thin", color: { argb: "FFB7C9C1" } }
+        };
+    });
+}
+
+
+function styleBodyRow(row) {
+    row.eachCell(cell => {
+        cell.alignment = {
+            vertical: "top",
+            wrapText: true
+        };
+
+        cell.border = {
+            top: { style: "thin", color: { argb: "FFE1E7E4" } },
+            left: { style: "thin", color: { argb: "FFE1E7E4" } },
+            bottom: { style: "thin", color: { argb: "FFE1E7E4" } },
+            right: { style: "thin", color: { argb: "FFE1E7E4" } }
+        };
+    });
+}
+
+
+async function exportHistoryToXLSX() {
+    const filtered = getFilteredCalculations();
+
+    if (filtered.length === 0) {
+        showOfficeMessage("Немає розрахунків для експорту.", "warning");
+        return;
+    }
+
+    if (!window.ExcelJS || !window.saveAs) {
+        showOfficeMessage("Бібліотека ExcelJS не підключена.", "danger");
+        return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+
+    workbook.creator = "Теплоенергетик";
+    workbook.created = new Date();
+
+    const historySheet = workbook.addWorksheet("Історія");
+    const inputsSheet = workbook.addWorksheet("Змінні");
+
+    historySheet.mergeCells("A1:H1");
+
+    const titleCell = historySheet.getCell("A1");
+    titleCell.value = "Теплоенергетик — журнал розрахунків";
+    titleCell.font = {
+        bold: true,
+        size: 16,
+        color: { argb: "FFFFFFFF" }
+    };
+    titleCell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF1F5C4D" }
+    };
+    titleCell.alignment = {
+        vertical: "middle",
+        horizontal: "center"
+    };
+
+    historySheet.getRow(1).height = 28;
+
+    historySheet.mergeCells("A2:H2");
+    historySheet.getCell("A2").value =
+        `Дата експорту: ${new Date().toLocaleString("uk-UA")} | Кількість записів: ${filtered.length}`;
+
+    historySheet.getCell("A2").font = {
+        italic: true,
+        color: { argb: "FF4F5B62" }
+    };
+
+    historySheet.getRow(2).height = 22;
+
+    historySheet.addRow([]);
+
+    historySheet.addRow([
+        "№",
+        "Дата розрахунку",
+        "Розділ",
+        "Назва формули",
+        "Формула",
+        "Результат",
+        "Одиниця",
+        "Коротко про змінні"
+    ]);
+
+    styleHeaderRow(historySheet.getRow(4));
+
+    filtered.forEach((item, index) => {
+        const inputRows = formatInputDataRows(item.input_data);
+        const inputText = inputRows
+            .map(row => `${row.parameter}: ${row.value}`)
+            .join("\n");
+
+        const row = historySheet.addRow([
+            index + 1,
+            formatDate(item.created_at),
+            item.section || "-",
+            item.formula_name || "-",
+            item.formula || "-",
+            item.result || "-",
+            item.unit || "",
+            inputText
+        ]);
+
+        styleBodyRow(row);
+
+        if (index % 2 === 1) {
+            row.eachCell(cell => {
+                cell.fill = {
+                    type: "pattern",
+                    pattern: "solid",
+                    fgColor: { argb: "FFF5F8F6" }
+                };
+            });
+        }
+    });
+
+    historySheet.columns = [
+        { width: 6 },
+        { width: 22 },
+        { width: 30 },
+        { width: 38 },
+        { width: 22 },
+        { width: 16 },
+        { width: 14 },
+        { width: 42 }
+    ];
+
+    historySheet.views = [
+        {
+            state: "frozen",
+            ySplit: 4
+        }
+    ];
+
+    historySheet.autoFilter = {
+        from: "A4",
+        to: `H${historySheet.rowCount}`
+    };
+
+    inputsSheet.mergeCells("A1:E1");
+
+    const inputsTitle = inputsSheet.getCell("A1");
+    inputsTitle.value = "Змінні та вхідні дані розрахунків";
+    inputsTitle.font = {
+        bold: true,
+        size: 16,
+        color: { argb: "FFFFFFFF" }
+    };
+    inputsTitle.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF24577A" }
+    };
+    inputsTitle.alignment = {
+        vertical: "middle",
+        horizontal: "center"
+    };
+
+    inputsSheet.getRow(1).height = 28;
+
+    inputsSheet.addRow([]);
+
+    inputsSheet.addRow([
+        "№ розрахунку",
+        "Дата",
+        "Формула",
+        "Назва змінної",
+        "Значення"
+    ]);
+
+    styleHeaderRow(inputsSheet.getRow(3));
+
+    filtered.forEach((item, index) => {
+        const inputRows = formatInputDataRows(item.input_data);
+
+        inputRows.forEach(input => {
+            const row = inputsSheet.addRow([
+                index + 1,
+                formatDate(item.created_at),
+                item.formula_name || "-",
+                input.parameter,
+                input.value
+            ]);
+
+            styleBodyRow(row);
+        });
+    });
+
+    inputsSheet.columns = [
+        { width: 14 },
+        { width: 22 },
+        { width: 38 },
+        { width: 36 },
+        { width: 18 }
+    ];
+
+    inputsSheet.views = [
+        {
+            state: "frozen",
+            ySplit: 3
+        }
+    ];
+
+    inputsSheet.autoFilter = {
+        from: "A3",
+        to: `E${inputsSheet.rowCount}`
+    };
+
+    /*
+       =========================
+       ЗБЕРЕЖЕННЯ
+       =========================
+    */
+
+    const fileDate = new Date()
+        .toISOString()
+        .slice(0, 10);
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    });
+
+    saveAs(blob, `history_${fileDate}.xlsx`);
+
+    showOfficeMessage("Красивий XLSX файл історії сформовано.", "success");
 }
 
 
@@ -1522,6 +1791,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (deleteProjectBtn) {
         deleteProjectBtn.addEventListener("click", deleteSelectedProject);
+    }
+
+    if (exportHistoryXlsxBtn) {
+        exportHistoryXlsxBtn.addEventListener("click", exportHistoryToXLSX);
     }
 
     if (exportProjectPdfBtn) {
