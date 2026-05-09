@@ -374,6 +374,22 @@ textarea.form-control {
     white-space: pre-line;
 }
 
+/* ================= ПЕРЕТЯГУВАННЯ ЕЛЕМЕНТІВ ПРОЄКТУ ================= */
+
+.project-sortable-item {
+    cursor: grab;
+    user-select: none;
+}
+
+    .project-sortable-item:active {
+        cursor: grabbing;
+    }
+
+    .project-sortable-item.dragging {
+        opacity: 0.55;
+        transform: scale(0.99);
+    }
+
 /* ================= ДОВІДНИК ================= */
 
 .directory-link-card {
