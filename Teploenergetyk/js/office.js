@@ -416,6 +416,26 @@ async function deleteAllHistory() {
    CSV ЕКСПОРТ ІСТОРІЇ
 ========================================================= */
 
+function formatCsvValue(value) {
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    let text = String(value);
+
+    /*
+       Захист від CSV injection:
+       якщо значення починається з =, +, -, @,
+       Excel може сприйняти його як формулу.
+    */
+    if (/^[=+\-@]/.test(text)) {
+        text = "'" + text;
+    }
+
+    return `"${text.replaceAll('"', '""')}"`;
+}
+
+
 function exportHistoryToCSV() {
     const filtered = getFilteredCalculations();
 
@@ -424,31 +444,48 @@ function exportHistoryToCSV() {
         return;
     }
 
+    const exportDate = new Date().toLocaleString("uk-UA");
+
     const headers = [
-        "Дата",
+        "№",
+        "Дата розрахунку",
         "Розділ",
+        "Назва формули",
         "Формула",
         "Вхідні дані",
         "Результат",
-        "Одиниця"
+        "Одиниця вимірювання"
     ];
 
-    const rows = filtered.map(item => [
+    const rows = filtered.map((item, index) => [
+        index + 1,
         formatDate(item.created_at),
-        item.section,
-        item.formula_name,
-        JSON.stringify(item.input_data),
-        item.result,
+        item.section || "-",
+        item.formula_name || "-",
+        item.formula || "-",
+        formatInputData(item.input_data),
+        item.result || "-",
         item.unit || ""
     ]);
 
-    const csv = [
-        headers.join(";"),
-        ...rows.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(";"))
-    ].join("\n");
+    const csvLines = [
+        "sep=;",
+        "Теплоенергетик — журнал розрахунків",
+        `Дата експорту: ${exportDate}`,
+        `Кількість записів: ${filtered.length}`,
+        "",
+        headers.map(formatCsvValue).join(";"),
+        ...rows.map(row => row.map(formatCsvValue).join(";"))
+    ];
+
+    const csv = csvLines.join("\n");
+
+    const fileDate = new Date()
+        .toISOString()
+        .slice(0, 10);
 
     downloadTextFile(
-        "history.csv",
+        `history_${fileDate}.csv`,
         "\uFEFF" + csv,
         "text/csv;charset=utf-8;"
     );
