@@ -217,46 +217,22 @@ async function loginUser(event) {
 
         const { data: profile, error: profileError } = await supabase
             .from("profiles")
-            .select("*")
+            .select("id")
             .eq("id", data.user.id)
             .maybeSingle();
 
-        if (profileError) {
+        if (profileError || !profile) {
             await supabase.auth.signOut();
 
+            localStorage.removeItem("is_logged_in");
+            localStorage.removeItem("user_role");
+
             showMessage(
-                `Помилка перевірки профілю: ${translateSupabaseError(profileError.message)}`,
+                "Профіль користувача не знайдено.",
                 "danger"
             );
 
             return;
-        }
-
-        if (!profile || profile.is_deleted) {
-            const { error: recreateError } = await supabase
-                .from("profiles")
-                .upsert({
-                    id: data.user.id,
-                    email: data.user.email,
-                    username: `user_${Date.now()}`,
-                    avatar_url: DEFAULT_AVATAR,
-                    role: "user",
-                    theme: "light",
-                    color_scheme: "green",
-                    font_size: "normal",
-                    is_deleted: false
-                });
-
-            if (recreateError) {
-                await supabase.auth.signOut();
-
-                showMessage(
-                    `Не вдалося створити профіль заново: ${translateSupabaseError(recreateError.message)}`,
-                    "danger"
-                );
-
-                return;
-            }
         }
 
         showMessage("Вхід виконано успішно.", "success");
@@ -318,7 +294,7 @@ async function checkAuthState() {
 
     const profile = await loadProfile(user.id);
 
-    if (!profile || profile.is_deleted) {
+    if (!profile) {
         await supabase.auth.signOut();
 
         localStorage.removeItem("is_logged_in");

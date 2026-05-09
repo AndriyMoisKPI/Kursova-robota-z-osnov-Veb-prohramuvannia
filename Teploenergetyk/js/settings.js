@@ -76,7 +76,7 @@ function isValidSettingsUsername(username) {
     return usernamePattern.test(username);
 }
 
-async function isSettingsUsernameTaken(username, userId) {
+async function isSettingsUsernameTaken(username) {
     const normalizedUsername = normalizeSettingsUsername(username);
 
     const { data, error } = await supabase
@@ -215,7 +215,7 @@ async function updateProfile(event) {
     }
 
     try {
-        const taken = await isSettingsUsernameTaken(username, currentUser.id);
+        const taken = await isSettingsUsernameTaken(username);
 
         if (taken) {
             showSettingsMessage("Такий нікнейм уже зайнятий.", "danger");
@@ -356,56 +356,54 @@ async function deleteAccountData() {
     if (!currentUser) return;
 
     showSiteConfirm(
-        "Ви справді хочете видалити профіль? Будуть видалені ваші проєкти, історія розрахунків і налаштування.",
+        "Ви справді хочете повністю видалити акаунт? Будуть видалені профіль, проєкти, історія розрахунків і сам акаунт авторизації.",
         async () => {
             try {
-                const { error: projectItemsError } = await supabase
-                    .from("project_items")
-                    .delete()
-                    .in(
-                        "project_id",
-                        await getUserProjectIds(currentUser.id)
-                    );
+                const { data: sessionData, error: sessionError } =
+                    await supabase.auth.getSession();
 
-                if (projectItemsError) {
-                    console.error(projectItemsError.message);
-                }
-
-                const deletedUsername = `deleted_user_${Date.now()}`;
-
-                const { error: profileDeleteError } = await supabase
-                    .from("profiles")
-                    .update({
-                        is_deleted: true,
-                        username: deletedUsername,
-                        avatar_url: null,
-                        role: "user"
-                    })
-                    .eq("id", currentUser.id);
-
-                if (profileDeleteError) {
+                if (sessionError || !sessionData.session) {
                     showSettingsMessage(
-                        `Помилка видалення профілю: ${translateSupabaseError(profileDeleteError.message)}`,
+                        "Сесія користувача завершилася. Увійдіть знову.",
                         "danger"
                     );
                     return;
                 }
 
-                const { error: calculationsError } = await supabase
-                    .from("calculations")
-                    .delete()
-                    .eq("user_id", currentUser.id);
+                const token = sessionData.session.access_token;
 
-                if (calculationsError) {
-                    console.error(calculationsError.message);
+                const response = await fetch(
+                    "https://izpldgnzfedgtqyvynuv.supabase.co/functions/v1/delete-account",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    showSettingsMessage(
+                        result.message || "Не вдалося видалити акаунт.",
+                        "danger"
+                    );
+                    return;
                 }
 
+                localStorage.removeItem("is_logged_in");
+                localStorage.removeItem("user_role");
+                localStorage.removeItem("theme");
+                localStorage.removeItem("color_scheme");
+                localStorage.removeItem("font_size");
 
                 await supabase.auth.signOut();
 
                 showSiteAlert(
-                    "Профіль і дані користувача видалено.",
-                    "Профіль видалено",
+                    "Акаунт повністю видалено. Тепер можна зареєструватися заново з цим email.",
+                    "Акаунт видалено",
                     () => {
                         window.location.href = "index.html";
                     }
@@ -413,26 +411,16 @@ async function deleteAccountData() {
 
             } catch (error) {
                 console.error(error);
-                showSettingsMessage("Не вдалося видалити профіль.", "danger");
+
+                showSettingsMessage(
+                    "Не вдалося видалити акаунт. Перевірте підключення або спробуйте пізніше.",
+                    "danger"
+                );
             }
         },
         "Підтвердження видалення",
         "Видалити"
     );
-}
-
-
-async function getUserProjectIds(userId) {
-    const { data, error } = await supabase
-        .from("projects")
-        .select("id")
-        .eq("user_id", userId);
-
-    if (error || !data || data.length === 0) {
-        return [-1];
-    }
-
-    return data.map(project => project.id);
 }
 
 /* =========================================================

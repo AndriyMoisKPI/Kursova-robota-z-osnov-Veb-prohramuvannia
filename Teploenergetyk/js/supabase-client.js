@@ -26,7 +26,6 @@
     */
     window.supabase = client;
 
-    console.log("Supabase connected:", SUPABASE_URL);
 })();
 
 
@@ -68,7 +67,7 @@ async function getCurrentProfile() {
         return null;
     }
 
-    if (!data || data.is_deleted) {
+    if (!data) {
         return null;
     }
 

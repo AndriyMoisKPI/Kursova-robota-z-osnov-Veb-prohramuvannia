@@ -525,7 +525,10 @@ async function loadProjects() {
 
     if (error) {
         console.error(error.message);
-        showOfficeMessage("Не вдалося завантажити проєкти.", "danger");
+        showOfficeMessage(
+            `Не вдалося завантажити проєкти: ${translateSupabaseError(error.message)}`,
+            "danger"
+        );
         return;
     }
 
@@ -653,21 +656,22 @@ async function loadProjectItems(projectId) {
     const { data, error } = await supabase
         .from("project_items")
         .select(`
-            *,
-            calculations (
-                id,
-                section,
-                formula_name,
-                formula,
-                input_data,
-                result,
-                unit,
-                chart_data,
-                created_at
-            )
-        `)
+        *,
+        calculations (
+            id,
+            section,
+            formula_name,
+            formula,
+            input_data,
+            result,
+            unit,
+            chart_data,
+            created_at
+        )
+    `)
         .eq("project_id", projectId)
-        .order("created_at", { ascending: false });
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: true });
 
     if (error) {
         console.error(error.message);
@@ -696,8 +700,8 @@ function renderProjectItems() {
     projectItemsList.innerHTML = selectedProjectItems.map(item => {
         if (item.item_type === "note") {
             return `
-                <div class="project-item">
-                    <div class="project-item-title">Нотатка</div>
+                <div class="project-item project-sortable-item" draggable="true" data-item-id="${item.id}">
+                    <div class="project-item-title">☰ Нотатка</div>
 
                     <p>${escapeHtml(item.note)}</p>
 
@@ -721,9 +725,9 @@ function renderProjectItems() {
             const calc = item.calculations;
 
             return `
-                <div class="project-item">
+                <div class="project-item project-sortable-item" draggable="true" data-item-id="${item.id}">
                     <div class="project-item-title">
-                        Розрахунок: ${escapeHtml(calc.formula_name)}
+                        ☰ Розрахунок: ${escapeHtml(calc.formula_name)}
                     </div>
 
                     <p class="mb-1">
@@ -761,6 +765,92 @@ function renderProjectItems() {
             </div>
         `;
     }).join("");
+
+    initProjectItemsDragAndDrop();
+
+}
+
+let draggedProjectItem = null;
+
+function initProjectItemsDragAndDrop() {
+    if (!projectItemsList) return;
+
+    const items = projectItemsList.querySelectorAll(".project-sortable-item");
+
+    items.forEach(item => {
+        item.addEventListener("dragstart", () => {
+            draggedProjectItem = item;
+            item.classList.add("dragging");
+        });
+
+        item.addEventListener("dragend", async () => {
+            item.classList.remove("dragging");
+            draggedProjectItem = null;
+
+            await saveProjectItemsOrder();
+        });
+
+        item.addEventListener("dragover", event => {
+            event.preventDefault();
+
+            const dragging = projectItemsList.querySelector(".dragging");
+
+            if (!dragging || dragging === item) return;
+
+            const rect = item.getBoundingClientRect();
+            const middle = rect.top + rect.height / 2;
+
+            if (event.clientY < middle) {
+                projectItemsList.insertBefore(dragging, item);
+            } else {
+                projectItemsList.insertBefore(dragging, item.nextSibling);
+            }
+        });
+    });
+}
+
+
+async function saveProjectItemsOrder() {
+    if (!selectedProject || !projectItemsList) return;
+
+    const items = [...projectItemsList.querySelectorAll(".project-sortable-item")];
+
+    const updates = items.map((item, index) => {
+        return {
+            id: Number(item.dataset.itemId),
+            sort_order: index + 1
+        };
+    });
+
+    for (const update of updates) {
+        const { error } = await supabase
+            .from("project_items")
+            .update({
+                sort_order: update.sort_order
+            })
+            .eq("id", update.id)
+            .eq("project_id", selectedProject.id);
+
+        if (error) {
+            showOfficeMessage(
+                `Помилка збереження порядку: ${translateSupabaseError(error.message)}`,
+                "danger"
+            );
+            return;
+        }
+    }
+
+    selectedProjectItems = selectedProjectItems
+        .map(item => {
+            const found = updates.find(update => update.id === item.id);
+            return {
+                ...item,
+                sort_order: found ? found.sort_order : item.sort_order
+            };
+        })
+        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+    showOfficeMessage("Порядок елементів проєкту збережено.", "success");
 }
 
 function fillCalculationSelect() {
@@ -817,7 +907,8 @@ async function addNoteToProject(event) {
         .insert({
             project_id: selectedProject.id,
             item_type: "note",
-            note: note
+            note: note,
+            sort_order: Date.now()
         });
 
     if (error) {
@@ -831,32 +922,6 @@ async function addNoteToProject(event) {
 
     await loadProjectItems(selectedProject.id);
 }
-
-
-function fillCalculationSelect() {
-    if (!calculationToProjectSelect) return;
-
-    if (!calculations || calculations.length === 0) {
-        calculationToProjectSelect.innerHTML = `
-            <option value="">Немає доступних розрахунків</option>
-        `;
-        return;
-    }
-
-    calculationToProjectSelect.innerHTML = `
-        <option value="">Оберіть розрахунок</option>
-    `;
-
-    calculations.forEach(calc => {
-        const option = document.createElement("option");
-
-        option.value = calc.id;
-        option.textContent = `${formatDate(calc.created_at)} — ${calc.formula_name} = ${calc.result} ${calc.unit || ""}`;
-
-        calculationToProjectSelect.appendChild(option);
-    });
-}
-
 
 async function addCalculationToProject() {
     hideOfficeMessage();
@@ -881,7 +946,8 @@ async function addCalculationToProject() {
             project_id: selectedProject.id,
             calculation_id: calculationId,
             item_type: "calculation",
-            chart_data: selectedCalculation?.chart_data || null
+            chart_data: selectedCalculation?.chart_data || null,
+            sort_order: Date.now()
         });
 
     if (error) {
